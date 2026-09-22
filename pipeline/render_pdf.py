@@ -116,8 +116,11 @@ def issue_to_dict(issue: Issue, editorial: dict) -> dict:
     }
 
 
-def pdf_name(issue: Issue) -> str:
-    return f"restructuring-newsletter-{issue.slug}.pdf"
+def pdf_name(issue: Issue, editorial: dict) -> str:
+    """The download filename. Derived from the config so a rename of the
+    publication carries through to every link without a code change."""
+    prefix = editorial["publication"].get("file_prefix", "issue")
+    return f"{prefix}-{issue.slug}.pdf"
 
 
 def render(issue: Issue, editorial: dict, out_dir: Path = OUTPUT_DIR) -> Path:
@@ -136,7 +139,7 @@ def render(issue: Issue, editorial: dict, out_dir: Path = OUTPUT_DIR) -> Path:
         json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8"
     )
 
-    out_path = out_dir / pdf_name(issue)
+    out_path = out_dir / pdf_name(issue, editorial)
     subprocess.run(
         ["typst", "compile", "--root", str(REPO_ROOT), str(TEMPLATE), str(out_path)],
         check=True,

@@ -22,6 +22,7 @@ import urllib.request
 from pathlib import Path
 
 from .model import Issue, load_config, load_issue
+from .render_pdf import pdf_name
 
 API = "https://api.buttondown.email/v1/emails"
 
@@ -34,7 +35,7 @@ def body_markdown(issue: Issue, editorial: dict) -> str:
     pub = editorial["publication"]
     site = pub["site_url"].rstrip("/")
     issue_url = f"{site}/issues/{issue.slug}/"
-    pdf_url = f"{site}/pdf/restructuring-newsletter-{issue.slug}.pdf"
+    pdf_url = f"{site}/pdf/{pdf_name(issue, editorial)}"
     full = editorial.get("email", {}).get("send_full_issue", True)
 
     out: list[str] = []

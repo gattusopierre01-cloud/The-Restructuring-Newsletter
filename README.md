@@ -1,4 +1,4 @@
-# The Restructuring Newsletter
+# The Restructuring Brief
 
 A weekly newsletter on restructuring and insolvency in the UK and US: notable
 filings and deals read from a finance point of view, and short notes on the

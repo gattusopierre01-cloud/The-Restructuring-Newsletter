@@ -19,7 +19,7 @@ from typing import Any
 # The SEC asks for a descriptive User-Agent with a contact address, and other
 # public services are happier with one too.
 USER_AGENT = (
-    "The Restructuring Newsletter/0.1 "
+    "The Restructuring Brief/0.1 "
     "(+https://github.com/gattusopierre01-cloud/The-Restructuring-Newsletter)"
 )
 

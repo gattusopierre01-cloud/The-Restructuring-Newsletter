@@ -1,4 +1,4 @@
-// The Restructuring Newsletter — PDF template.
+// The Restructuring Brief — PDF template.
 //
 // Data comes from issue.json, written by pipeline/render_pdf.py, so this file
 // holds only presentation. Compile with:

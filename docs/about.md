@@ -1,6 +1,6 @@
 # About
 
-The Restructuring Newsletter is a weekly summary of developments in
+The Restructuring Brief is a weekly summary of developments in
 restructuring and insolvency in the United Kingdom and the United States. It
 covers two things: notable filings and deals, read from a finance point of
 view, and short notes on the court decisions that shape how those deals get

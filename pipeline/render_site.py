@@ -13,6 +13,7 @@ import shutil
 from pathlib import Path
 
 from .model import REPO_ROOT, Issue, load_all_issues, load_config
+from .render_pdf import pdf_name
 
 DOCS = REPO_ROOT / "docs"
 ISSUE_PAGES = DOCS / "issues"
@@ -190,7 +191,7 @@ def index_markdown(issues: list[Issue], editorial: dict) -> str:
     out += [
         "",
         f"[Read issue {latest.issue}](issues/{latest.slug}.md){{ .md-button .md-button--primary }} "
-        f"[Download the PDF](pdf/restructuring-newsletter-{latest.slug}.pdf){{ .md-button }}",
+        f"[Download the PDF](pdf/{pdf_name(latest, editorial)}){{ .md-button }}",
         "",
         "## Get it by email",
         "",
@@ -210,13 +211,13 @@ def index_markdown(issues: list[Issue], editorial: dict) -> str:
     return "\n".join(out)
 
 
-def archive_markdown(issues: list[Issue]) -> str:
+def archive_markdown(issues: list[Issue], editorial: dict) -> str:
     out = ["# Archive", "", "Every issue, newest first.", ""]
     out.append("| Issue | Period | Cases | Read | PDF |")
     out.append("| --- | --- | --- | --- | --- |")
     for issue in issues:
         cases = ", ".join(c.name for c in issue.cases) or "—"
-        pdf = f"pdf/restructuring-newsletter-{issue.slug}.pdf"
+        pdf = f"pdf/{pdf_name(issue, editorial)}"
         out.append(
             f"| [{issue.issue}](issues/{issue.slug}.md) | {issue.period_label} | "
             f"{cases} | {issue.read_minutes()} min | [PDF]({pdf}) |"
@@ -262,14 +263,14 @@ def main() -> int:
     written: list[Path] = []
 
     for issue in issues:
-        pdf_href = f"../pdf/restructuring-newsletter-{issue.slug}.pdf"
+        pdf_href = f"../pdf/{pdf_name(issue, editorial)}"
         path = ISSUE_PAGES / f"{issue.slug}.md"
         path.write_text(issue_markdown(issue, editorial, pdf_href), encoding="utf-8")
         written.append(path)
 
     for name, content in (
         ("index.md", index_markdown(issues, editorial)),
-        ("archive.md", archive_markdown(issues)),
+        ("archive.md", archive_markdown(issues, editorial)),
         ("glossary.md", glossary_markdown(issues)),
     ):
         path = DOCS / name
