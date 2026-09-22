@@ -1,0 +1,152 @@
+/* The Restructuring Newsletter — site styling.
+   A small file on purpose: Material handles the layout, this sets the
+   publication's own voice (oxblood accent, law-report typography). */
+
+:root {
+  --rn-accent: #7a2230;
+  --rn-accent-soft: #f6eff0;
+  --rn-muted: #6d6a66;
+  --rn-panel: #f6f4f1;
+  --rn-hairline: #cdc8c0;
+
+  /* Material's own tokens, so links and buttons pick up the accent too. */
+  --md-typeset-a-color: #7a2230;
+  --md-accent-fg-color: #9c2c3d;
+}
+
+[data-md-color-scheme="slate"] {
+  --rn-accent: #e0919c;
+  --rn-accent-soft: #2a1f21;
+  --rn-muted: #a9a49e;
+  --rn-panel: #22201f;
+  --rn-hairline: #3d3a37;
+
+  --md-typeset-a-color: #e0919c;
+  --md-accent-fg-color: #eaa9b2;
+}
+
+/* Buttons: the primary one carries the publication's colour, not Material's. */
+.md-typeset .md-button {
+  border-color: var(--rn-accent);
+  color: var(--rn-accent);
+}
+
+.md-typeset .md-button--primary {
+  background-color: var(--rn-accent);
+  border-color: var(--rn-accent);
+  color: #fff;
+}
+
+.md-typeset .md-button:hover {
+  background-color: var(--rn-accent);
+  border-color: var(--rn-accent);
+  color: #fff;
+}
+
+/* Jurisdiction tags: `UK` / `US` are written as inline code in the Markdown,
+   which keeps the source readable and lets them be styled here. */
+.md-typeset h3 code,
+.md-typeset li > code:first-child {
+  background: var(--rn-accent);
+  color: #fff;
+  font-size: 0.62em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.2em 0.45em;
+  border-radius: 2px;
+  vertical-align: 0.22em;
+}
+
+/* Section headings, set like a law report. */
+.md-typeset h2 {
+  border-top: 2px solid var(--rn-accent);
+  padding-top: 0.5rem;
+  margin-top: 2.4rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rn-accent);
+}
+
+.md-typeset h3 {
+  margin-top: 1.6rem;
+  font-size: 1.15rem;
+}
+
+/* The citation / venue line under each heading. */
+.md-typeset h3 + p em {
+  color: var(--rn-muted);
+  font-size: 0.82rem;
+}
+
+/* Bottom line, pulled out the way it is in the PDF. */
+.md-typeset .admonition.abstract {
+  border-left: 3px solid var(--rn-accent);
+  background: var(--rn-panel);
+  font-size: 0.95rem;
+}
+
+.md-typeset .admonition.abstract > .admonition-title {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+
+/* Subscribe form on the front page. */
+form.subscribe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 1.2rem 0 2rem;
+  padding: 1.1rem;
+  background: var(--rn-panel);
+  border-left: 3px solid var(--rn-accent);
+  border-radius: 2px;
+}
+
+form.subscribe label {
+  flex: 0 0 100%;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rn-muted);
+}
+
+form.subscribe input[type="email"] {
+  flex: 1 1 16rem;
+  padding: 0.6rem 0.7rem;
+  font: inherit;
+  font-size: 0.9rem;
+  color: inherit;
+  background: var(--md-default-bg-color);
+  border: 1px solid var(--rn-hairline);
+  border-radius: 2px;
+}
+
+form.subscribe input[type="submit"] {
+  padding: 0.6rem 1.3rem;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--rn-accent);
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+form.subscribe input[type="submit"]:hover {
+  filter: brightness(1.15);
+}
+
+/* Source links sit below an item, so they should not shout. */
+.md-typeset p > a[href^="http"]:only-child {
+  font-size: 0.85rem;
+}
+
+@media screen and (max-width: 44em) {
+  .md-typeset h2 {
+    font-size: 0.95rem;
+  }
+}

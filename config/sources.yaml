@@ -1,0 +1,115 @@
+# Where the weekly draft looks. Add or remove entries here; the collectors in
+# pipeline/sources/ read this file rather than hard-coding endpoints.
+#
+# enabled: false means "wired up but not switched on yet".
+
+primary:
+  # Primary sources: these are what a case note or a filing may be cited to.
+
+  - id: edgar_bankruptcy_8k
+    enabled: true
+    kind: api
+    jurisdiction: US
+    name: SEC EDGAR — Item 1.03 bankruptcy 8-Ks
+    description: >
+      US public companies must report a bankruptcy or receivership on Form 8-K
+      under Item 1.03. This is the cleanest free signal that a listed issuer has
+      filed. Full-text search covers roughly the last five years.
+    endpoint: https://efts.sec.gov/LATEST/search-index?q=%22Item%201.03%22&forms=8-K
+    docs: https://www.sec.gov/edgar/sec-api-documentation
+    auth: none
+    notes: SEC requires a descriptive User-Agent with a contact address.
+
+  - id: courtlistener_opinions
+    enabled: true
+    kind: api
+    jurisdiction: US
+    name: CourtListener — opinions and dockets
+    description: >
+      Free Law Project's API. Used for bankruptcy court and appellate opinions,
+      and for docket entries on the matters on the watchlist.
+    endpoint: https://www.courtlistener.com/api/rest/v4/
+    docs: https://www.courtlistener.com/help/api/rest/
+    auth: token          # COURTLISTENER_TOKEN
+    courts: [scotus, ca1, ca2, ca3, ca5, ca9, deb, nysb, txsb, njb]
+
+  - id: find_case_law
+    enabled: true
+    kind: atom
+    jurisdiction: UK
+    name: The National Archives — Find Case Law
+    description: >
+      Official source for judgments of the senior courts of England and Wales.
+      Filtered to the Business and Property Courts, Insolvency and Companies
+      List, plus the Court of Appeal and Supreme Court.
+    endpoint: https://caselaw.nationalarchives.gov.uk/atom.xml
+    docs: https://caselaw.nationalarchives.gov.uk/
+    auth: none
+    filters:
+      courts: [ewhc/ch, ewhc/comm, ewca/civ, uksc]
+      keywords:
+        - restructuring plan
+        - Part 26A
+        - scheme of arrangement
+        - administration
+        - liquidation
+        - wrongful trading
+        - cross-class cram down
+
+  - id: insolvency_service_stats
+    enabled: true
+    kind: html
+    jurisdiction: UK
+    name: Insolvency Service — monthly insolvency statistics
+    description: Company and individual insolvency numbers for England and Wales.
+    endpoint: https://www.gov.uk/government/collections/monthly-insolvency-statistics
+    auth: none
+    cadence: monthly
+
+  - id: the_gazette
+    enabled: false
+    kind: atom
+    jurisdiction: UK
+    name: The Gazette — insolvency notices
+    description: >
+      Statutory notices: administrators appointed, winding-up petitions,
+      creditors' meetings. High volume, so it needs a size or sector filter
+      before it is switched on.
+    endpoint: https://www.thegazette.co.uk/all-notices/notice/data.feed
+    auth: none
+
+signals:
+  # Used to FIND developments and to sanity check a reading. Never cited as the
+  # source for what a court held. See config/editorial.yaml -> sourcing.
+
+  - id: firm_alerts
+    enabled: true
+    kind: rss
+    name: Restructuring commentary
+    description: >
+      Law-firm and adviser commentary, used only to spot decisions worth
+      reading and to check that a summary has not misread one.
+    feeds:
+      - https://www.jdsupra.com/rss/topic-Chapter-11-2013.rss
+      - https://www.lexology.com/rss/library?navigatorid=29a1e8c1-27e2-4fdd-b3dd-a8b8b0a9d4b9
+
+scoring:
+  # How select.py ranks candidates when there are more than fit in an issue.
+  weights:
+    jurisdiction_in_scope: 3
+    is_appellate_or_supreme: 5
+    on_watched_theme: 4
+    large_debt_quantum: 3
+    has_primary_source: 5
+    is_commentary_only: -4
+    older_than_window: -6
+  watched_themes:
+    - cross-class cram-down and the horizontal comparator
+    - treatment of out-of-the-money creditors
+    - third-party releases after Purdue
+    - uptier and drop-down liability management exercises
+    - creditor duties and the twilight zone
+    - Chapter 15 and cross-border recognition
+    - pension and landlord claims in restructuring plans
+    - directors' duties and wrongful trading
+  lookback_days: 10       # slight overlap so nothing falls between issues

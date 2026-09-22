@@ -1,0 +1,99 @@
+# Editorial rules for The Restructuring Newsletter.
+# The drafting pipeline reads these as instructions; validate.py enforces the
+# numeric limits. Change things here rather than in the Python.
+
+publication:
+  name: The Restructuring Newsletter
+  strapline: Weekly developments in restructuring and insolvency — UK and US
+  cadence: weekly
+  # Change these two once a custom domain is set up.
+  site_url: https://gattusopierre01-cloud.github.io/The-Restructuring-Newsletter/
+  site_url_label: gattusopierre01-cloud.github.io/The-Restructuring-Newsletter
+  audience: >
+    Restructuring and insolvency professionals (lawyers, advisers, investors)
+    and students. Every item must work for both: a short "bottom line" for the
+    professional, and enough background that a student who does not yet know
+    the doctrine can follow it.
+  jurisdictions: [UK, US]
+  target_read_minutes: [6, 8]
+  target_pages: [4, 6]
+
+email:
+  provider: buttondown
+  # Your Buttondown username — this is what the subscribe form posts to.
+  # Change it after creating the account; nothing else needs editing.
+  username: the-restructuring-newsletter
+  send_full_issue: true      # false sends the three lines and a link instead
+
+tone:
+  - Explanatory, not advisory. Never tell the reader what to do.
+  - Neutral on the merits of a decision; report what was held, not whether it was right.
+  - No adjectives doing the work of analysis ("landmark", "seismic", "game-changing").
+  - Spell out an abbreviation the first time it appears in an issue.
+  - UK English spelling throughout.
+
+# Hard limits. validate.py fails the build when these are breached, which is
+# what stops an automated draft from quietly growing every week.
+sections:
+  headlines:
+    label: The week in three lines
+    min_items: 3
+    max_items: 3
+    max_words_per_item: 30
+  deals:
+    label: Deals and filings
+    min_items: 2
+    max_items: 6
+    max_words_per_item: 80          # applies to `notable`
+    require_source: true
+  cases:
+    label: Case notes
+    min_items: 1
+    max_items: 4
+    require_source: true
+    require_citation: true
+    max_words:
+      bottom_line: 45
+      facts: 70
+      question: 35
+      holding: 70
+      why_it_matters: 70
+      background: 90
+  concept:
+    label: Concept of the week
+    max_words: 170
+  numbers:
+    label: Numbers
+    min_items: 0
+    max_items: 6
+    require_source: true
+  watchlist:
+    label: Watchlist
+    min_items: 0
+    max_items: 8
+    max_words_per_item: 25
+
+citations:
+  UK: >
+    Neutral citation where one exists, e.g. [2024] EWCA Civ 24. Give the court
+    and the judge. Link to the judgment on Find Case Law or judiciary.uk, never
+    only to a law-firm note about it.
+  US: >
+    Reporter citation where one exists, otherwise court and docket number,
+    e.g. No. 23-124 (S.D. Tex.). Link to the opinion or the docket.
+
+sourcing:
+  # The rule that keeps an automated legal newsletter honest.
+  primary_source_required: true
+  commentary_use: >
+    Law-firm alerts and blogs may be used to find a development and to sanity
+    check a reading of it. They are never the cited source for what a court
+    held, and their wording is not reproduced.
+  paywalled: exclude          # students cannot reach paywalled links
+
+disclaimer: >
+  The Restructuring Newsletter is published for information and education only.
+  It is not legal, financial or investment advice, it is not a substitute for
+  professional advice on any specific matter, and nothing in it creates a
+  professional relationship of any kind. Summaries are necessarily compressed;
+  always read the primary source before relying on a decision.

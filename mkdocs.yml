@@ -1,0 +1,80 @@
+site_name: The Restructuring Newsletter
+site_description: >
+  Weekly developments in restructuring and insolvency, UK and US — deals and
+  filings from a finance view, and short notes on the decisions that matter.
+site_url: https://gattusopierre01-cloud.github.io/The-Restructuring-Newsletter/
+repo_url: https://github.com/gattusopierre01-cloud/The-Restructuring-Newsletter
+repo_name: View on GitHub
+copyright: >
+  Published for information and education only. Not legal, financial or
+  investment advice.
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  language: en
+  font:
+    text: Source Serif 4
+    code: IBM Plex Mono
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.top
+    - navigation.tracking
+    - content.code.copy
+    - search.highlight
+    - search.suggest
+    - toc.follow
+
+nav:
+  - This week: index.md
+  - Archive: archive.md
+  - Glossary: glossary.md
+  - About: about.md
+
+# Issue pages are generated and reached from the archive, not the top nav.
+not_in_nav: |
+  issues/*.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - footnotes
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.smartsymbols
+
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/
+      name: The newsletter on LinkedIn
+  generator: false
+
+# Fail the build on a broken internal link rather than shipping one.
+strict: true
