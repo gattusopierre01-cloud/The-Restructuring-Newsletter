@@ -1,10 +1,12 @@
 # About
 
-The Restructuring Brief is a weekly summary of developments in
-restructuring and insolvency in the United Kingdom and the United States. It
-covers two things: notable filings and deals, read from a finance point of
-view, and short notes on the court decisions that shape how those deals get
-done.
+The Restructuring Brief is a weekly summary of developments in restructuring
+and insolvency. It covers two things, and they have deliberately different
+scopes: the largest restructurings anywhere in the world, read from a finance
+point of view, and short notes on the court decisions that shape how those
+deals get done — those drawn from the United Kingdom and the United States
+only, which are the two systems this newsletter can analyse properly rather
+than merely report.
 
 ## Who it is for
 

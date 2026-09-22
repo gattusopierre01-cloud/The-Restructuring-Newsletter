@@ -15,6 +15,10 @@ site_dir: site
 theme:
   name: material
   language: en
+  # Copied from assets/ into docs/assets/ by pipeline/render_site.py,
+  # so the crest has one source of truth shared with the PDF.
+  logo: assets/crest.svg
+  favicon: assets/favicon.svg
   font:
     text: Source Serif 4
     code: IBM Plex Mono

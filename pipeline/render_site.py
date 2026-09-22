@@ -17,6 +17,8 @@ from .render_pdf import pdf_name
 
 DOCS = REPO_ROOT / "docs"
 ISSUE_PAGES = DOCS / "issues"
+ASSETS_SRC = REPO_ROOT / "assets"
+ASSETS_DEST = DOCS / "assets"
 
 TAG = {"UK": ":flag_gb: UK", "US": ":flag_us: US"}
 
@@ -252,6 +254,21 @@ def glossary_markdown(issues: list[Issue]) -> str:
     return "\n".join(out)
 
 
+def copy_assets() -> list[Path]:
+    """The crest lives in assets/ and is shared with the PDF template.
+    MkDocs only serves what is under docs/, so it is copied in rather than
+    kept in two places where the two could drift apart."""
+    if not ASSETS_SRC.is_dir():
+        return []
+    ASSETS_DEST.mkdir(parents=True, exist_ok=True)
+    copied = []
+    for src in sorted(ASSETS_SRC.glob("*.svg")):
+        dest = ASSETS_DEST / src.name
+        shutil.copyfile(src, dest)
+        copied.append(dest)
+    return copied
+
+
 def main() -> int:
     editorial = load_config("editorial")
     issues = load_all_issues()
@@ -260,7 +277,7 @@ def main() -> int:
         return 1
 
     ISSUE_PAGES.mkdir(parents=True, exist_ok=True)
-    written: list[Path] = []
+    written: list[Path] = copy_assets()
 
     for issue in issues:
         pdf_href = f"../pdf/{pdf_name(issue, editorial)}"

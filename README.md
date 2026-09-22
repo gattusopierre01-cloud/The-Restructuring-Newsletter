@@ -1,8 +1,8 @@
 # The Restructuring Brief
 
-A weekly newsletter on restructuring and insolvency in the UK and US: notable
-filings and deals read from a finance point of view, and short notes on the
-court decisions that shape how those deals get done. Written for practitioners
+A weekly newsletter on restructuring and insolvency: the largest restructurings
+anywhere in the world, read from a finance point of view, and short notes on the
+UK and US court decisions that shape how those deals get done. Written for practitioners
 and students at the same time — the bottom line first, the doctrine explained
 underneath.
 

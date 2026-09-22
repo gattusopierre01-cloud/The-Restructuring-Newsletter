@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Favicon variant. The scales are dropped and every remaining shape is made
+  heavier: at 16px the balance turns to mush, so the mark keeps only what
+  survives — the split, the gold pale and the waterfall.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" width="120" height="140" role="img" aria-label="The Restructuring Brief">
+  <title>The Restructuring Brief</title>
+  <defs>
+    <clipPath id="rb-fav">
+      <path d="M8,6 H112 V74 C112,106 90,126 60,136 C30,126 8,106 8,74 Z"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#rb-fav)">
+    <rect x="0" y="0" width="120" height="140" fill="#ffffff"/>
+    <rect x="0" y="0" width="56" height="140" fill="#7a2230"/>
+    <rect x="56" y="0" width="8" height="140" fill="#b8862b"/>
+    <g fill="#7a2230">
+      <rect x="70" y="42" width="40" height="13"/>
+      <rect x="70" y="63" width="29" height="13"/>
+      <rect x="70" y="84" width="18" height="13"/>
+    </g>
+  </g>
+  <path d="M8,6 H112 V74 C112,106 90,126 60,136 C30,126 8,106 8,74 Z"
+        fill="none" stroke="#191919" stroke-width="9" stroke-linejoin="round"/>
+</svg>

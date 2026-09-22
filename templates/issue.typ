@@ -93,6 +93,10 @@
   #line(length: 100%, stroke: 1.6pt + ink)
   #v(0.55em)
   #align(center)[
+    // The crest. Centred above the wordmark on page one; the running footer
+    // stays text-only so it costs nothing on later pages.
+    #image("/assets/crest.svg", height: 15mm)
+    #v(0.5em)
     #text(size: 25pt, weight: "bold", tracking: 0.04em)[#upper(d.publication)]
     #v(0.3em)
     #text(size: 9pt, fill: muted, tracking: 0.05em)[#d.strapline]
