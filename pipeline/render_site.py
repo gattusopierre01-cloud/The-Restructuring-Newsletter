@@ -63,25 +63,48 @@ def issue_markdown(issue: Issue, editorial: dict, pdf_href: str) -> str:
         out.append(f"{i}. {headline}")
     out.append("")
 
-    # -- deals -------------------------------------------------------------
-    if issue.deals:
-        out.append("## Deals and filings")
+    # -- situation of the week ---------------------------------------------
+    if issue.featured:
+        f = issue.featured
+        out.append(f"## {editorial['sections']['featured']['label']}")
         out.append("")
-        for deal in issue.deals:
-            out.append(f"### {tag(deal.jurisdiction)} {deal.name}")
+        out.append(f"### {tag(f.jurisdiction)} {f.name}")
+        out.append("")
+        meta = [b for b in (f.kind, f.venue, f.debt, f.parties) if b]
+        out.append("*" + " · ".join(meta) + "*")
+        out.append("")
+        out.append(f.body)
+        out.append("")
+        if f.source:
+            out.append(f"→ {_source_link(f.source)}")
             out.append("")
-            meta = [b for b in (deal.kind, deal.venue, deal.debt, deal.parties) if b]
-            out.append("*" + " · ".join(meta) + "*")
+
+    # -- situations ---------------------------------------------------------
+    stages = editorial["sections"]["situations"].get("stages", {})
+    groups = issue.grouped_situations(stages)
+    if groups:
+        out.append(f"## {editorial['sections']['situations']['label']}")
+        out.append("")
+        for label, items in groups:
+            out.append(f"**{label}**")
             out.append("")
-            out.append(deal.notable)
-            out.append("")
-            if deal.source:
-                out.append(f"→ {_source_link(deal.source)}")
+            for s_item in items:
+                out.append(f"### {tag(s_item.jurisdiction)} {s_item.name}")
                 out.append("")
+                meta = [b for b in (s_item.kind, s_item.venue, s_item.debt, s_item.parties) if b]
+                out.append("*" + " · ".join(meta) + "*")
+                out.append("")
+                out.append(s_item.notable)
+                out.append("")
+                if s_item.source:
+                    out.append(f"→ {_source_link(s_item.source)}")
+                    out.append("")
 
     # -- case notes --------------------------------------------------------
     if issue.cases:
         out.append("## Case notes")
+        out.append("")
+        out.append("*United Kingdom and United States only — the two systems this newsletter analyses rather than merely reports.*")
         out.append("")
         for case in issue.cases:
             out.append(f"### {tag(case.jurisdiction)} {case.name}")
@@ -109,16 +132,20 @@ def issue_markdown(issue: Issue, editorial: dict, pdf_href: str) -> str:
                 out.append(f"→ {_source_link(case.source)}")
                 out.append("")
 
-    # -- concept -----------------------------------------------------------
-    if issue.concept:
-        out.append("## Concept of the week")
+    # -- both sides of the table -------------------------------------------
+    if issue.concepts:
+        out.append(f"## {editorial['sections']['concepts']['label']}")
         out.append("")
-        out.append(f"### {issue.concept.term}")
-        out.append("")
-        out.append(issue.concept.body)
-        out.append("")
-        if issue.concept.see_also:
-            out.append("*See also: " + " · ".join(issue.concept.see_also) + "*")
+        for side, concept in issue.concepts.pair():
+            out.append(f"### {side} — {concept.term}")
+            out.append("")
+            out.append(concept.body)
+            out.append("")
+            if concept.see_also:
+                out.append("*See also: " + " · ".join(concept.see_also) + "*")
+                out.append("")
+        if issue.concepts.pairing:
+            out.append(f"> {issue.concepts.pairing}")
             out.append("")
 
     # -- numbers -----------------------------------------------------------
@@ -229,28 +256,51 @@ def archive_markdown(issues: list[Issue], editorial: dict) -> str:
 
 
 def glossary_markdown(issues: list[Issue]) -> str:
-    """Built from every 'concept of the week' published so far."""
+    """Built from every 'both sides of the table' published so far.
+
+    Split by side rather than merged alphabetically: a reader looking up a
+    doctrine and a reader looking up a valuation term are doing different
+    things, and after a year there are two useful lists rather than one long
+    one.
+    """
     out = [
         "# Glossary",
         "",
-        "Terms explained in past issues, in alphabetical order. Each entry links",
-        "back to the issue it appeared in.",
+        "Terms explained in past issues. Each entry links back to the issue it",
+        "appeared in. Two lists, because the newsletter explains one legal",
+        "concept and one financial one each week.",
         "",
     ]
-    entries = [(i.concept, i) for i in issues if i.concept]
-    if not entries:
-        out.append("*Nothing here yet — the first concept of the week starts this off.*")
+
+    sides: dict[str, list[tuple]] = {"Law": [], "Finance": []}
+    for issue in issues:
+        if not issue.concepts:
+            continue
+        for side, concept in issue.concepts.pair():
+            sides[side].append((concept, issue))
+
+    if not any(sides.values()):
+        out.append("*Nothing here yet — the first issue starts this off.*")
         return "\n".join(out) + "\n"
 
-    for concept, issue in sorted(entries, key=lambda e: e[0].term.lower()):
-        out.append(f"## {concept.term}")
+    for side in ("Law", "Finance"):
+        out.append(f"## {side}")
         out.append("")
-        out.append(concept.body)
-        out.append("")
-        out.append(
-            f"*From [issue {issue.issue}](issues/{issue.slug}.md), {issue.period_label}.*"
-        )
-        out.append("")
+        entries = sorted(sides[side], key=lambda e: e[0].term.lower())
+        if not entries:
+            out.append("*Nothing here yet.*")
+            out.append("")
+            continue
+        for concept, issue in entries:
+            out.append(f"### {concept.term}")
+            out.append("")
+            out.append(concept.body)
+            out.append("")
+            out.append(
+                f"*From [issue {issue.issue}](issues/{issue.slug}.md), "
+                f"{issue.period_label}.*"
+            )
+            out.append("")
     return "\n".join(out)
 
 

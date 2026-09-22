@@ -29,9 +29,9 @@ def _source(src) -> dict | None:
     return None if src is None else asdict(src)
 
 
-def _deal_meta(deal) -> str:
-    """The monospaced line under a deal heading."""
-    bits = [b for b in (deal.venue, deal.debt, deal.parties) if b]
+def _situation_meta(item) -> str:
+    """The reference line under a situation heading."""
+    bits = [b for b in (item.venue, item.debt, item.parties) if b]
     return "  ·  ".join(bits)
 
 
@@ -46,6 +46,11 @@ def issue_to_dict(issue: Issue, editorial: dict) -> dict:
     pub = editorial["publication"]
     return {
         "publication": pub["name"],
+        "labels": {
+            key: editorial["sections"][key]["label"]
+            for key in ("headlines", "featured", "situations", "cases",
+                        "concepts", "numbers", "watchlist")
+        },
         "strapline": pub["strapline"],
         "site_url": pub["site_url"],
         "site_url_label": pub["site_url_label"],
@@ -59,16 +64,38 @@ def issue_to_dict(issue: Issue, editorial: dict) -> dict:
         "date_published": f"{issue.date_published:%-d %B %Y}",
         "read_minutes": issue.read_minutes(),
         "headlines": issue.headlines,
-        "deals": [
-            {
-                "jurisdiction": d.jurisdiction,
-                "name": d.name,
-                "kind": d.kind,
-                "meta_line": _deal_meta(d),
-                "notable": d.notable,
-                "source": _source(d.source),
+        "featured": (
+            None
+            if issue.featured is None
+            else {
+                "jurisdiction": issue.featured.jurisdiction,
+                "name": issue.featured.name,
+                "kind": issue.featured.kind,
+                "meta_line": _situation_meta(issue.featured),
+                "body": issue.featured.body,
+                "source": _source(issue.featured.source),
             }
-            for d in issue.deals
+        ),
+        # Grouped here rather than in the template: Typst should lay out, not
+        # decide what belongs together.
+        "situation_groups": [
+            {
+                "label": label,
+                "items": [
+                    {
+                        "jurisdiction": s.jurisdiction,
+                        "name": s.name,
+                        "kind": s.kind,
+                        "meta_line": _situation_meta(s),
+                        "notable": s.notable,
+                        "source": _source(s.source),
+                    }
+                    for s in items
+                ],
+            }
+            for label, items in issue.grouped_situations(
+                editorial["sections"]["situations"].get("stages", {})
+            )
         ],
         "cases": [
             {
@@ -86,13 +113,20 @@ def issue_to_dict(issue: Issue, editorial: dict) -> dict:
             }
             for c in issue.cases
         ],
-        "concept": (
+        "concepts": (
             None
-            if issue.concept is None
+            if issue.concepts is None
             else {
-                "term": issue.concept.term,
-                "body": issue.concept.body,
-                "see_also": issue.concept.see_also,
+                "pairing": issue.concepts.pairing,
+                "sides": [
+                    {
+                        "label": side,
+                        "term": concept.term,
+                        "body": concept.body,
+                        "see_also": concept.see_also,
+                    }
+                    for side, concept in issue.concepts.pair()
+                ],
             }
         ),
         "numbers": [

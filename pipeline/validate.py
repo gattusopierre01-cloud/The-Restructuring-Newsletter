@@ -20,11 +20,12 @@ import sys
 from pathlib import Path
 
 from .model import (
-    JURISDICTIONS,
+    CASE_JURISDICTIONS,
     Issue,
     issue_paths,
     load_config,
     load_issue,
+    valid_jurisdiction,
 )
 
 # Neutral citation, e.g. [2024] EWCA Civ 24 / [2023] UKSC 5 / [2024] EWHC 12 (Ch)
@@ -80,9 +81,26 @@ def _check_count(rep: Report, rules: dict, label: str, items: list) -> None:
         rep.error(f"{label}: {len(items)} items, at most {hi} allowed")
 
 
-def _check_jurisdiction(rep: Report, where: str, value: str) -> None:
-    if value not in JURISDICTIONS:
-        rep.error(f"{where}: jurisdiction {value!r} is not one of {list(JURISDICTIONS)}")
+def _check_jurisdiction(rep: Report, where: str, value: str, *, cases_only: bool = False) -> None:
+    """Situations come from anywhere; case notes may not.
+
+    This is the rule an automated draft is most likely to break — it will
+    happily write a note on a German decision because the commentary it found
+    was interesting. Reporting a foreign judgment badly is worse than not
+    covering it, so the build fails rather than warns.
+    """
+    if cases_only:
+        if value not in CASE_JURISDICTIONS:
+            rep.error(
+                f"{where}: case notes are {' and '.join(CASE_JURISDICTIONS)} only, "
+                f"got {value!r}. A situation from {value!r} belongs in Situations."
+            )
+        return
+    if not valid_jurisdiction(value):
+        rep.error(
+            f"{where}: {value!r} is not a two-letter country code "
+            "(DE, NL, BR) or one of EU, Cross-border"
+        )
 
 
 def _check_source(rep: Report, where: str, source, required: bool) -> None:
@@ -118,27 +136,55 @@ def validate_issue(issue: Issue, editorial: dict) -> Report:
                 f"limit {rules['max_words_per_item']}"
             )
 
-    # -- deals -------------------------------------------------------------
-    rules = sections["deals"]
-    _check_count(rep, rules, "deals", issue.deals)
-    for deal in issue.deals:
-        where = f"deal {deal.name!r}"
-        _check_jurisdiction(rep, where, deal.jurisdiction)
-        _check_source(rep, where, deal.source, rules.get("require_source", True))
-        if _words(deal.notable) > rules["max_words_per_item"]:
+    # -- situation of the week ---------------------------------------------
+    rules = sections["featured"]
+    if issue.featured is None:
+        rep.warn("no situation of the week — the section people forward")
+    else:
+        where = f"featured {issue.featured.name!r}"
+        _check_jurisdiction(rep, where, issue.featured.jurisdiction)
+        _check_source(rep, where, issue.featured.source, rules.get("require_source", True))
+        if _words(issue.featured.body) > rules["max_words"]:
             rep.error(
-                f"{where}: 'notable' is {_words(deal.notable)} words, "
+                f"{where}: {_words(issue.featured.body)} words, "
+                f"limit {rules['max_words']}"
+            )
+        if not issue.featured.body:
+            rep.error(f"{where}: no body")
+
+    # -- situations ---------------------------------------------------------
+    rules = sections["situations"]
+    stages = rules.get("stages", {})
+    _check_count(rep, rules, "situations", issue.situations)
+    for situation in issue.situations:
+        where = f"situation {situation.name!r}"
+        _check_jurisdiction(rep, where, situation.jurisdiction)
+        _check_source(rep, where, situation.source, rules.get("require_source", True))
+        if _words(situation.notable) > rules["max_words_per_item"]:
+            rep.error(
+                f"{where}: 'notable' is {_words(situation.notable)} words, "
                 f"limit {rules['max_words_per_item']}"
             )
-        if not deal.kind:
+        if not situation.kind:
             rep.error(f"{where}: no procedure given (Chapter 11, plan, administration…)")
+        if situation.stage not in stages:
+            rep.error(
+                f"{where}: stage {situation.stage!r} is not one of {list(stages)}"
+            )
+
+    names = [s.name for s in issue.situations]
+    if issue.featured and issue.featured.name in names:
+        rep.warn(
+            f"{issue.featured.name!r} appears both as the featured situation "
+            "and in the list below it"
+        )
 
     # -- case notes --------------------------------------------------------
     rules = sections["cases"]
     _check_count(rep, rules, "cases", issue.cases)
     for case in issue.cases:
         where = f"case {case.name!r}"
-        _check_jurisdiction(rep, where, case.jurisdiction)
+        _check_jurisdiction(rep, where, case.jurisdiction, cases_only=True)
         _check_source(rep, where, case.source, rules.get("require_source", True))
 
         for field_name, limit in rules["max_words"].items():
@@ -164,16 +210,30 @@ def validate_issue(issue: Issue, editorial: dict) -> Report:
         if not case.court:
             rep.error(f"{where}: no court given")
 
-    # -- concept -----------------------------------------------------------
-    if issue.concept:
-        limit = sections["concept"]["max_words"]
-        if _words(issue.concept.body) > limit:
-            rep.error(
-                f"concept {issue.concept.term!r}: "
-                f"{_words(issue.concept.body)} words, limit {limit}"
-            )
+    # -- both sides of the table -------------------------------------------
+    rules = sections["concepts"]
+    if issue.concepts is None:
+        rep.warn(
+            "no paired concepts — students are half the audience, and the "
+            "glossary is built from this section"
+        )
     else:
-        rep.warn("no concept of the week — students are half the audience")
+        limit = rules["max_words_each"]
+        for side, concept in issue.concepts.pair():
+            if not concept.term:
+                rep.error(f"concepts: the {side.lower()} side has no term")
+            if not concept.body:
+                rep.error(f"concepts: {concept.term or side!r} has no body")
+            elif _words(concept.body) > limit:
+                rep.error(
+                    f"concept {concept.term!r} ({side}): "
+                    f"{_words(concept.body)} words, limit {limit}"
+                )
+        if rules.get("pairing_expected", True) and not issue.concepts.pairing:
+            rep.warn(
+                "concepts: no pairing note — the two sides read better when the "
+                "issue says how they connect"
+            )
 
     # -- numbers and watchlist --------------------------------------------
     rules = sections["numbers"]
@@ -197,7 +257,8 @@ def validate_issue(issue: Issue, editorial: dict) -> Report:
     haystack = " ".join(
         [
             *issue.headlines,
-            *(d.notable for d in issue.deals),
+            *(s.notable for s in issue.situations),
+            issue.featured.body if issue.featured else "",
             *(c.why_it_matters for c in issue.cases),
             *(c.bottom_line for c in issue.cases),
         ]

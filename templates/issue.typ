@@ -15,6 +15,7 @@
 
 #let ink = rgb("#191919")
 #let accent = rgb("#7a2230") // oxblood
+#let gold = rgb("#b8862b")   // the crest's pale; used to mark the featured item
 #let muted = rgb("#6d6a66")
 #let hairline = rgb("#cdc8c0")
 #let panel = rgb("#f6f4f1")
@@ -132,7 +133,7 @@
 
 // -- the week in three lines -------------------------------------------------
 
-#section-head("The week in three lines")
+#section-head(d.labels.headlines)
 
 #for (i, h) in d.headlines.enumerate() [
   #grid(
@@ -144,29 +145,74 @@
   #v(0.45em)
 ]
 
-// -- deals and filings -------------------------------------------------------
+// -- situation of the week ---------------------------------------------------
 
-#section-head("Deals and filings")
-
-#for deal in d.deals [
-  #block(width: 100%, breakable: false, below: 1.0em)[
-    #tag(deal.jurisdiction)
-    #h(5pt)
-    #text(size: 11.5pt, weight: "bold")[#deal.name]
-    #h(4pt)
-    #text(size: 9pt, fill: muted)[— #deal.kind]
-    #v(0.25em)
-    #meta(deal.meta_line)
-    #v(0.3em)
-    #text(size: 10pt)[#deal.notable]
-    #v(0.25em)
-    #source-line(deal.source)
+#if d.featured != none {
+  section-head(d.labels.featured)
+  block(
+    width: 100%,
+    stroke: (left: 2.5pt + gold, rest: 0.5pt + hairline),
+    inset: (x: 12pt, y: 11pt),
+    below: 1.1em,
+    breakable: true,
+  )[
+    #block(breakable: false, width: 100%)[
+      #tag(d.featured.jurisdiction)
+      #h(5pt)
+      #text(size: 13pt, weight: "bold")[#d.featured.name]
+      #h(4pt)
+      #text(size: 9pt, fill: muted)[— #d.featured.kind]
+      #v(0.25em)
+      #meta(d.featured.meta_line)
+    ]
+    #v(0.5em)
+    #text(size: 10.2pt)[#d.featured.body]
+    #v(0.35em)
+    #source-line(d.featured.source)
   ]
-]
+}
+
+// -- situations --------------------------------------------------------------
+
+#if d.situation_groups.len() > 0 {
+  section-head(d.labels.situations, note: "restructurings worldwide, by stage")
+
+  for group in d.situation_groups [
+    // Stage label, set as a rule with the name sitting on it.
+    #block(width: 100%, sticky: true, above: 0.9em, below: 0.6em)[
+      #grid(
+        columns: (auto, 1fr),
+        gutter: 7pt,
+        align: (left + horizon, left + horizon),
+        text(size: 8pt, weight: "bold", tracking: 0.14em, fill: muted)[#upper(group.label)],
+        line(length: 100%, stroke: 0.5pt + hairline),
+      )
+    ]
+
+    #for item in group.items [
+      #block(width: 100%, breakable: false, below: 0.95em)[
+        #tag(item.jurisdiction)
+        #h(5pt)
+        #text(size: 11.5pt, weight: "bold")[#item.name]
+        #h(4pt)
+        #text(size: 9pt, fill: muted)[— #item.kind]
+        #v(0.25em)
+        #meta(item.meta_line)
+        #v(0.3em)
+        #text(size: 10pt)[#item.notable]
+        #v(0.25em)
+        #source-line(item.source)
+      ]
+    ]
+  ]
+}
 
 // -- case notes --------------------------------------------------------------
 
-#section-head("Case notes", note: "bottom line first; background for those new to the doctrine")
+#section-head(
+  d.labels.cases,
+  note: "United Kingdom and United States only",
+)
 
 #for c in d.cases [
   #block(
@@ -221,19 +267,41 @@
   ]
 ]
 
-// -- concept of the week -----------------------------------------------------
+// -- both sides of the table -------------------------------------------------
 
-#if d.concept != none {
-  section-head("Concept of the week")
-  // Short enough to keep whole, and it reads badly split.
+// Two columns side by side, so the pairing is visible before either is read.
+// The grid's own fill gives both cells the height of the taller one, which a
+// pair of separate blocks would not.
+#if d.concepts != none {
+  section-head(d.labels.concepts, note: "one from each seat")
   block(width: 100%, breakable: false)[
-    #text(size: 13pt, weight: "bold")[#d.concept.term]
-    #v(0.4em)
-    #text(size: 10.3pt)[#d.concept.body]
-    #if d.concept.see_also.len() > 0 [
-      #v(0.4em)
-      #text(size: 8.5pt, fill: muted, style: "italic")[
-        See also: #d.concept.see_also.join(" · ")
+    #grid(
+      columns: (1fr, 1fr),
+      gutter: 11pt,
+      fill: panel,
+      inset: (x: 10pt, y: 9pt),
+      ..d.concepts.sides.map(side => [
+        #text(size: 8pt, weight: "bold", tracking: 0.14em, fill: accent)[#upper(side.label)]
+        #v(0.3em)
+        #text(size: 12pt, weight: "bold")[#side.term]
+        #v(0.4em)
+        #text(size: 9.6pt)[#side.body]
+        #if side.see_also.len() > 0 [
+          #v(0.4em)
+          #text(size: 8pt, fill: muted, style: "italic")[
+            See also: #side.see_also.join(" · ")
+          ]
+        ]
+      ]),
+    )
+    #if d.concepts.pairing != "" [
+      #v(0.6em)
+      #block(
+        width: 100%,
+        inset: (left: 8pt),
+        stroke: (left: 2pt + gold),
+      )[
+        #text(size: 9.4pt, style: "italic", fill: rgb("#3d3a37"))[#d.concepts.pairing]
       ]
     ]
   ]

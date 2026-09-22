@@ -43,10 +43,24 @@ headlines:
   -
   -
 
-deals:
-  - jurisdiction: UK        # UK | US | EU | Cross-border
+featured:                 # Situation of the week — one matter, explained properly
+  jurisdiction:           # two-letter code: US, DE, NL, BR… or EU / Cross-border
+  name:
+  kind:                   # Chapter 11 | Restructuring plan (Part 26A) | StaRUG | WHOA…
+  stage: negotiating      # filed | negotiating | completed
+  venue:
+  debt:
+  parties:
+  body: >
+  source:
+    title:
+    url:
+
+situations:               # anywhere in the world; thresholds in config/editorial.yaml
+  - jurisdiction: US
     name:
-    kind:                   # Chapter 11 | Restructuring plan (Part 26A) | Administration…
+    kind:
+    stage: filed          # filed | negotiating | completed
     venue:
     debt:
     parties:
@@ -56,7 +70,7 @@ deals:
       url:
 
 cases:
-  - jurisdiction: UK
+  - jurisdiction: UK        # UK or US only — a matter from elsewhere goes in `situations`
     name:
     citation:               # UK: [2026] EWHC 123 (Ch)   US: No. 26-1234 (S.D. Tex.)
     court:
@@ -72,10 +86,16 @@ cases:
       title:
       url:                  # the judgment itself, not a note about it
 
-concept:
-  term:
-  body: >
-  see_also: []
+concepts:                 # Both sides of the table
+  pairing: >              # one line on how the legal test and the number connect
+  law:
+    term:
+    body: >
+    see_also: []
+  finance:
+    term:
+    body: >
+    see_also: []
 
 numbers: []
 

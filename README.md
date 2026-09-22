@@ -53,12 +53,19 @@ period_start: 2026-09-28
 period_end: 2026-10-04
 
 headlines: [...]           # the week in three lines
-deals: [...]               # filings and deals, finance view
+featured: {...}            # situation of the week: one matter, explained properly
+situations: [...]          # the big restructurings, grouped by stage
 cases: [...]               # bottom line → facts → question → holding → why → background
-concept: {...}             # one concept explained from first principles
+concepts: {law, finance}   # both sides of the table
 numbers: [...]             # indicators, tracked week to week
 watchlist: [...]           # what is coming up
 ```
+
+**Two scopes, deliberately different.** `situations` may come from anywhere in
+the world. `cases` are UK and US only — those are the two systems this
+publication can analyse rather than merely report, and `validate.py` fails the
+build on a case note tagged anything else. A German decision is not a case
+note; the matter behind it may well be a situation.
 
 `issues/2026-W39.yaml` is a specimen issue, written by hand to settle the
 format. It uses two landmark decisions rather than current news, and it is
@@ -133,13 +140,33 @@ Secrets go in GitHub, never in the repository.
 
 - [x] **Phase 1** — issue format, PDF template, website, specimen issue
 - [x] **Phase 2** — publishing: site and PDF on merge, email send as a manual step
+- [x] **Phase 2b** — the revised structure: situation of the week, situations
+      grouped by stage, paired law/finance concepts, the split glossary
 - [ ] **Phase 3** — collectors. EDGAR and Find Case Law are written and can be
       run by hand; they have not yet been watched over a full week, and
-      CourtListener, the Insolvency Service and the Gazette are not written yet
+      CourtListener, the Insolvency Service and the Gazette are not written yet.
+      Global situation coverage is the open problem: there is no free
+      structured feed for it (see below)
 - [ ] **Phase 4** — drafting: an LLM fills the issue fields from the candidates
 - [ ] **Phase 5** — the weekly pull request, on a schedule
 - [ ] **Phase 6** — topic tags on case notes, a maturity-wall watchlist, a
       custom domain
+
+## The one thing that is not solved
+
+UK and US case law has clean, free, structured sources — Find Case Law and
+CourtListener — so the case notes will largely build themselves.
+
+Situations do not. The big restructurings are covered properly by Debtwire,
+Reorg and 9fin, all of which are expensive and none of which can be
+redistributed. The free route is law-firm alerts and general news feeds, which
+find the largest matters a day or two late and miss mid-size ones. That is
+workable for a weekly, but expect the situations section to need more of your
+own input than the case notes do.
+
+`config/editorial.yaml -> inclusion` sets what counts as big enough. The
+defaults were set before the collectors had run a full week; move the threshold
+once you can see how many matters clear it.
 
 ## Turning on automatic sending
 

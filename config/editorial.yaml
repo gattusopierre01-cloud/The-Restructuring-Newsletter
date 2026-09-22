@@ -16,7 +16,12 @@ publication:
     and students. Every item must work for both: a short "bottom line" for the
     professional, and enough background that a student who does not yet know
     the doctrine can follow it.
-  jurisdictions: [UK, US]
+  # The two halves have deliberately different scopes. State it on the page:
+  # a reader who sees a Brazilian filing but no Brazilian case note should
+  # understand that as a choice, not an omission.
+  scope:
+    situations: worldwide
+    cases: [UK, US]
   target_read_minutes: [6, 8]
   target_pages: [4, 6]
 
@@ -42,12 +47,25 @@ sections:
     min_items: 3
     max_items: 3
     max_words_per_item: 30
-  deals:
-    label: Deals and filings
+  featured:
+    label: Situation of the week
+    # One restructuring explained properly, rather than six explained badly.
+    # This is the section people forward.
+    max_words: 280
+    require_source: true
+  situations:
+    label: Situations
     min_items: 2
-    max_items: 6
+    max_items: 5
     max_words_per_item: 80          # applies to `notable`
     require_source: true
+    # Grouped by where a matter has got to, not by country: someone scanning
+    # for what is new reads the first group, someone tracking a name reads the
+    # second. A map of jurisdictions helps nobody.
+    stages:
+      filed: Filed this week
+      negotiating: In negotiation
+      completed: Completed
   cases:
     label: Case notes
     min_items: 1
@@ -61,9 +79,13 @@ sections:
       holding: 70
       why_it_matters: 70
       background: 90
-  concept:
-    label: Concept of the week
-    max_words: 170
+  concepts:
+    label: Both sides of the table
+    # One legal concept and one financial one, ideally the same idea seen from
+    # the two seats: the legal test usually turns on a number, and the number
+    # usually only matters because of a legal test.
+    max_words_each: 120
+    pairing_expected: true          # a warning when unpaired, never a failure
   numbers:
     label: Numbers
     min_items: 0
@@ -83,6 +105,17 @@ citations:
   US: >
     Reporter citation where one exists, otherwise court and docket number,
     e.g. No. 23-124 (S.D. Tex.). Link to the opinion or the docket.
+
+inclusion:
+  # What counts as one of "the largest restructurings in the world". Without a
+  # number the automation drifts and the issues stop feeling consistent.
+  # A matter qualifies on ANY of these.
+  min_debt_usd: 500000000
+  or_listed_parent: true            # a listed parent at any size
+  or_cross_border: true             # proceedings in more than one jurisdiction
+  note: >
+    These are defaults, set before the collectors had run a full week. Expect to
+    move the threshold once you can see how many matters clear it.
 
 sourcing:
   # The rule that keeps an automated legal newsletter honest.

@@ -60,21 +60,42 @@ def body_markdown(issue: Issue, editorial: dict) -> str:
         out.append("")
         return "\n".join(out) + _footer(editorial, site)
 
-    if issue.deals:
-        out.append("## Deals and filings")
+    if issue.featured:
+        f = issue.featured
+        out.append(f"## {editorial['sections']['featured']['label']}")
         out.append("")
-        for deal in issue.deals:
-            out.append(f"**{deal.jurisdiction} · {deal.name}** — {deal.kind}")
+        out.append(f"**{f.jurisdiction} · {f.name}** — {f.kind}")
+        out.append("")
+        meta = [b for b in (f.venue, f.debt, f.parties) if b]
+        if meta:
+            out.append("*" + " · ".join(meta) + "*")
             out.append("")
-            meta = [b for b in (deal.venue, deal.debt, deal.parties) if b]
-            if meta:
-                out.append("*" + " · ".join(meta) + "*")
-                out.append("")
-            out.append(deal.notable)
+        out.append(f.body)
+        out.append("")
+        if f.source:
+            out.append(f"[{f.source.title}]({f.source.url})")
             out.append("")
-            if deal.source:
-                out.append(f"[{deal.source.title}]({deal.source.url})")
+
+    stages = editorial["sections"]["situations"].get("stages", {})
+    groups = issue.grouped_situations(stages)
+    if groups:
+        out.append(f"## {editorial['sections']['situations']['label']}")
+        out.append("")
+        for label, items in groups:
+            out.append(f"**{label}**")
+            out.append("")
+            for item in items:
+                out.append(f"**{item.jurisdiction} · {item.name}** — {item.kind}")
                 out.append("")
+                meta = [b for b in (item.venue, item.debt, item.parties) if b]
+                if meta:
+                    out.append("*" + " · ".join(meta) + "*")
+                    out.append("")
+                out.append(item.notable)
+                out.append("")
+                if item.source:
+                    out.append(f"[{item.source.title}]({item.source.url})")
+                    out.append("")
 
     if issue.cases:
         out.append("## Case notes")
@@ -100,13 +121,17 @@ def body_markdown(issue: Issue, editorial: dict) -> str:
                 out.append(f"[Read the judgment — {case.source.title}]({case.source.url})")
                 out.append("")
 
-    if issue.concept:
-        out.append("## Concept of the week")
+    if issue.concepts:
+        out.append(f"## {editorial['sections']['concepts']['label']}")
         out.append("")
-        out.append(f"**{issue.concept.term}**")
-        out.append("")
-        out.append(issue.concept.body)
-        out.append("")
+        for side, concept in issue.concepts.pair():
+            out.append(f"**{side} — {concept.term}**")
+            out.append("")
+            out.append(concept.body)
+            out.append("")
+        if issue.concepts.pairing:
+            out.append(f"> {issue.concepts.pairing}")
+            out.append("")
 
     if issue.numbers:
         out.append("## Numbers")

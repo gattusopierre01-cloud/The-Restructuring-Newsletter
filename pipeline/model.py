@@ -9,6 +9,7 @@ human ever sees it.
 from __future__ import annotations
 
 import datetime as dt
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -19,7 +20,17 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 ISSUES_DIR = REPO_ROOT / "issues"
 CONFIG_DIR = REPO_ROOT / "config"
 
-JURISDICTIONS = ("UK", "US", "EU", "Cross-border")
+# Situations come from anywhere, so the tag is an ISO-style two-letter code
+# (DE, NL, BR) plus a few names that are not countries. Case notes are held to
+# CASE_JURISDICTIONS, because those are the two systems this publication can
+# analyse rather than merely report.
+NAMED_JURISDICTIONS = ("EU", "Cross-border")
+CASE_JURISDICTIONS = ("UK", "US")
+COUNTRY_CODE = re.compile(r"^[A-Z]{2}$")
+
+
+def valid_jurisdiction(value: str) -> bool:
+    return bool(COUNTRY_CODE.match(value)) or value in NAMED_JURISDICTIONS
 
 
 def load_config(name: str) -> dict[str, Any]:
@@ -41,14 +52,32 @@ class Source:
 
 
 @dataclass
-class Deal:
+class Situation:
+    """A restructuring worth knowing about. `stage` groups it in the issue."""
+
     jurisdiction: str
     name: str
     kind: str
+    stage: str = "negotiating"
     venue: str = ""
     debt: str = ""
     parties: str = ""
     notable: str = ""
+    source: Source | None = None
+
+
+@dataclass
+class Featured:
+    """Situation of the week: one matter explained properly."""
+
+    jurisdiction: str
+    name: str
+    kind: str
+    stage: str = "negotiating"
+    venue: str = ""
+    debt: str = ""
+    parties: str = ""
+    body: str = ""
     source: Source | None = None
 
 
@@ -74,6 +103,18 @@ class Concept:
     term: str
     body: str
     see_also: list[str] = field(default_factory=list)
+
+
+@dataclass
+class Concepts:
+    """Both sides of the table: the same idea from the two seats."""
+
+    law: Concept
+    finance: Concept
+    pairing: str = ""
+
+    def pair(self) -> list[tuple[str, Concept]]:
+        return [("Law", self.law), ("Finance", self.finance)]
 
 
 @dataclass
@@ -103,9 +144,10 @@ class Issue:
     period_start: dt.date
     period_end: dt.date
     headlines: list[str] = field(default_factory=list)
-    deals: list[Deal] = field(default_factory=list)
+    featured: Featured | None = None
+    situations: list[Situation] = field(default_factory=list)
     cases: list[Case] = field(default_factory=list)
-    concept: Concept | None = None
+    concepts: Concepts | None = None
     numbers: list[Number] = field(default_factory=list)
     watchlist: list[WatchItem] = field(default_factory=list)
     specimen_notice: str = ""
@@ -130,10 +172,22 @@ class Issue:
     def title(self) -> str:
         return f"Issue {self.issue} — {self.period_label}"
 
+    def grouped_situations(self, stages: dict[str, str]) -> list[tuple[str, list[Situation]]]:
+        """Situations by stage, in the order the config lists them, skipping
+        any stage with nothing in it."""
+        groups = []
+        for key, label in stages.items():
+            items = [s for s in self.situations if s.stage == key]
+            if items:
+                groups.append((label, items))
+        return groups
+
     def word_count(self) -> int:
         chunks: list[str] = list(self.headlines)
-        for deal in self.deals:
-            chunks.append(deal.notable)
+        if self.featured:
+            chunks.append(self.featured.body)
+        for situation in self.situations:
+            chunks.append(situation.notable)
         for case in self.cases:
             chunks += [
                 case.bottom_line,
@@ -143,8 +197,8 @@ class Issue:
                 case.why_it_matters,
                 case.background,
             ]
-        if self.concept:
-            chunks.append(self.concept.body)
+        if self.concepts:
+            chunks += [self.concepts.law.body, self.concepts.finance.body]
         chunks += [item.text for item in self.watchlist]
         return sum(len(chunk.split()) for chunk in chunks if chunk)
 
@@ -170,14 +224,39 @@ def _as_date(value: Any) -> dt.date | None:
     return dt.date.fromisoformat(str(value))
 
 
+def _parse_concept(raw: Any) -> Concept | None:
+    if not raw:
+        return None
+    return Concept(
+        term=_clean(raw.get("term")),
+        body=_clean(raw.get("body")),
+        see_also=[_clean(x) for x in raw.get("see_also") or []],
+    )
+
+
 def parse_issue(raw: dict[str, Any]) -> Issue:
-    concept_raw = raw.get("concept")
-    concept = None
-    if concept_raw:
-        concept = Concept(
-            term=_clean(concept_raw.get("term")),
-            body=_clean(concept_raw.get("body")),
-            see_also=[_clean(x) for x in concept_raw.get("see_also") or []],
+    concepts_raw = raw.get("concepts") or {}
+    law = _parse_concept(concepts_raw.get("law"))
+    finance = _parse_concept(concepts_raw.get("finance"))
+    concepts = (
+        Concepts(law=law, finance=finance, pairing=_clean(concepts_raw.get("pairing")))
+        if law and finance
+        else None
+    )
+
+    featured_raw = raw.get("featured")
+    featured = None
+    if featured_raw:
+        featured = Featured(
+            jurisdiction=_clean(featured_raw.get("jurisdiction")),
+            name=_clean(featured_raw.get("name")),
+            kind=_clean(featured_raw.get("kind")),
+            stage=_clean(featured_raw.get("stage")) or "negotiating",
+            venue=_clean(featured_raw.get("venue")),
+            debt=_clean(featured_raw.get("debt")),
+            parties=_clean(featured_raw.get("parties")),
+            body=_clean(featured_raw.get("body")),
+            source=Source.parse(featured_raw.get("source")),
         )
 
     return Issue(
@@ -189,18 +268,20 @@ def parse_issue(raw: dict[str, Any]) -> Issue:
         period_end=_as_date(raw["period_end"]),
         specimen_notice=_clean(raw.get("specimen_notice")),
         headlines=[_clean(h) for h in raw.get("headlines") or []],
-        deals=[
-            Deal(
+        featured=featured,
+        situations=[
+            Situation(
                 jurisdiction=_clean(d.get("jurisdiction")),
                 name=_clean(d.get("name")),
                 kind=_clean(d.get("kind")),
+                stage=_clean(d.get("stage")) or "negotiating",
                 venue=_clean(d.get("venue")),
                 debt=_clean(d.get("debt")),
                 parties=_clean(d.get("parties")),
                 notable=_clean(d.get("notable")),
                 source=Source.parse(d.get("source")),
             )
-            for d in raw.get("deals") or []
+            for d in raw.get("situations") or []
         ],
         cases=[
             Case(
@@ -220,7 +301,7 @@ def parse_issue(raw: dict[str, Any]) -> Issue:
             )
             for c in raw.get("cases") or []
         ],
-        concept=concept,
+        concepts=concepts,
         numbers=[
             Number(
                 label=_clean(n.get("label")),

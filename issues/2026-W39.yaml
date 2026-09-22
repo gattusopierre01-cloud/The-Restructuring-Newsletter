@@ -2,6 +2,9 @@
 # pipeline is switched on. Every field below is rendered into three outputs:
 # the PDF, the website page and the email.
 #
+# Two scopes, deliberately different: `situations` may come from anywhere in
+# the world, `cases` are UK and US only. validate.py enforces that.
+#
 # `status: specimen` puts the notice on page 1 and keeps the issue out of the
 # email send. Set it to `published` for a real issue.
 
@@ -25,26 +28,46 @@ headlines:
   - Cineworld remains the worked example of a UK-listed group restructuring
     through Chapter 11 in Texas rather than at home.
 
-deals:
-  - jurisdiction: UK
-    name: Adler Group / AGPS BondCo plc
-    kind: Restructuring plan (Part 26A)
-    venue: High Court, then Court of Appeal
-    debt: c. €6.1bn of senior unsecured notes
-    parties: Six series of notes maturing 2024–2029; an ad hoc group of holders opposed
-    notable: >
-      The plan extended maturities in the order the notes already fell due, so
-      the 2024 holders were repaid first and the 2029 holders last. The Court of
-      Appeal held that this departure from pari passu treatment had not been
-      justified and set the sanction order aside. The structure, not the
-      quantum, is what made it significant.
-    source:
-      title: Judgment — Re AGPS BondCo plc [2024] EWCA Civ 24
-      url: https://www.judiciary.uk/wp-content/uploads/2024/01/Adler-Approved-Judgment-for-circulation.pdf
+# ---------------------------------------------------------------------------
+# Situation of the week — one matter explained properly
+# ---------------------------------------------------------------------------
+featured:
+  jurisdiction: DE
+  name: Adler Group / AGPS BondCo plc
+  kind: Restructuring plan (Part 26A)
+  stage: completed
+  venue: High Court of England and Wales, then the Court of Appeal
+  debt: c. €6.1bn of senior unsecured notes in six series
+  parties: An ad hoc group of 2029 noteholders opposed the plan
+  body: >
+    Adler is a German real estate group that borrowed in the European
+    high-yield market through six series of senior unsecured notes maturing
+    between 2024 and 2029. The notes ranked equally with one another. When the
+    group ran short of liquidity it did not restructure in Germany, where it
+    operates, but in London, using a Part 26A restructuring plan through an
+    English-incorporated issuer. The plan extended maturities, and it did so in
+    the order the notes already fell due: the 2024 holders were repaid first,
+    the 2029 holders last. For creditors ranking equally that is a meaningful
+    difference. Holders further out bore more of the risk that the money would
+    run out before their turn came. The 2029 group voted against and challenged
+    the sanction order. The judge at first instance sanctioned the plan; the
+    Court of Appeal set it aside, holding that the differential treatment
+    between equal-ranking creditors had not been justified. What makes the
+    matter worth revisiting is that nothing turned on the size of the debt. It
+    turned on the shape of the plan — which creditors were asked to wait, and
+    whether anyone had explained why.
+  source:
+    title: Judgment — Re AGPS BondCo plc [2024] EWCA Civ 24
+    url: https://www.judiciary.uk/wp-content/uploads/2024/01/Adler-Approved-Judgment-for-circulation.pdf
 
+# ---------------------------------------------------------------------------
+# Situations — grouped by stage, drawn from anywhere in the world
+# ---------------------------------------------------------------------------
+situations:
   - jurisdiction: US
     name: Purdue Pharma L.P.
     kind: Chapter 11
+    stage: completed
     venue: S.D.N.Y., then the Supreme Court
     debt: Plan valued at c. $6bn in Sackler family contributions
     parties: Opioid claimants, state attorneys general, the US Trustee
@@ -60,18 +83,22 @@ deals:
   - jurisdiction: US
     name: Cineworld Group plc
     kind: Chapter 11
+    stage: completed
     venue: S.D. Tex. (filed 7 September 2022)
     debt: c. $4.5bn of debt eliminated under the plan
-    parties: Secured lenders took the equity; existing shareholders received nothing
+    parties: Secured lenders took the equity; shareholders received nothing
     notable: >
-      A UK-listed group with a large US cinema business (Regal) restructured in
-      Texas rather than through an English plan or scheme. It is the standard
+      A UK-listed group with a large US cinema business restructured in Texas
+      rather than through an English plan or scheme. It is the standard
       illustration of forum choice driven by where the operations and the
       lenders sit. The group emerged in August 2023 and later delisted.
     source:
       title: Case docket — Cineworld Group plc, Kroll Restructuring Administration
       url: https://cases.ra.kroll.com/cineworld/
 
+# ---------------------------------------------------------------------------
+# Case notes — UK and US only
+# ---------------------------------------------------------------------------
 cases:
   - jurisdiction: UK
     name: Re AGPS BondCo plc (Adler)
@@ -84,10 +111,10 @@ cases:
       look hard at how value is shared between creditors of the same rank. An
       unexplained departure from pari passu treatment will not be sanctioned.
     facts: >
-      Adler Group, a German real estate group, used an English Part 26A plan to
-      extend the maturities of six series of senior unsecured notes. The notes
-      ranked equally, but the plan paid them out in maturity order. Holders of
-      the 2029 notes voted against and challenged the sanction order.
+      Adler Group used an English Part 26A plan to extend the maturities of six
+      series of senior unsecured notes. The notes ranked equally, but the plan
+      paid them out in maturity order. Holders of the 2029 notes voted against
+      and challenged the sanction order.
     question: >
       Where creditors of the same rank are treated differently under a
       restructuring plan, how should the court exercise its discretion to
@@ -152,23 +179,38 @@ cases:
       title: Opinion (Justia)
       url: https://supreme.justia.com/cases/federal/us/603/23-124/
 
-concept:
-  term: Cross-class cram-down
-  body: >
-    Cram-down is the court's power to impose a restructuring on a class of
-    creditors that voted against it. In England it arrived with Part 26A of the
-    Companies Act 2006 in 2020 and is the main thing a restructuring plan can do
-    that a scheme of arrangement cannot: under a scheme, every class has a veto.
-    Two conditions must be met. First, no member of the dissenting class may be
-    worse off than they would be in the relevant alternative — usually
-    administration or liquidation — which is the vertical comparison. Second, at
-    least one class that would receive a payment in that alternative must have
-    voted in favour, so someone with real money at stake supports the plan.
-    Meeting both conditions does not entitle a company to sanction. The court
-    still has a discretion, and Adler is where the Court of Appeal explained how
-    it is exercised: the judge also looks horizontally, at how the plan divides
-    value between creditors of the same rank.
-  see_also: [pari passu, relevant alternative, restructuring plan, scheme of arrangement]
+# ---------------------------------------------------------------------------
+# Both sides of the table — one legal concept, one financial, ideally paired
+# ---------------------------------------------------------------------------
+concepts:
+  pairing: >
+    The legal test decides who may be bound. The valuation decides who is in
+    the money, and therefore whose vote counts. Neither works without the other.
+  law:
+    term: Cross-class cram-down
+    body: >
+      The court's power to bind a class of creditors that voted against a plan.
+      In England it arrived with Part 26A of the Companies Act 2006 and is the
+      main thing a restructuring plan can do that a scheme of arrangement
+      cannot: under a scheme, every class has a veto. Two conditions must be
+      met. No member of the dissenting class may be worse off than in the
+      relevant alternative, and at least one class with a genuine economic
+      interest must have voted in favour. Meeting both earns a hearing, not a
+      sanction — the judge keeps a discretion, and Adler is where the Court of
+      Appeal explained how it is exercised.
+    see_also: [pari passu, restructuring plan, scheme of arrangement]
+  finance:
+    term: The relevant alternative
+    body: >
+      The counterfactual the whole test rests on: what each creditor would
+      actually recover if the plan failed, usually in administration or
+      liquidation. It is an estimate, produced by the company's own advisers,
+      and it does two jobs at once. It sets the floor no dissenting creditor may
+      be pushed below, and it decides who is in the money — which in turn
+      decides whose vote the court treats as meaningful. Creditors shown to
+      recover nothing in the alternative have little to argue with. Which is why
+      most plan fights are, underneath, fights about the valuation.
+    see_also: [valuation, out of the money, liquidation analysis]
 
 numbers:
   - label: England and Wales — registered company insolvencies
