@@ -1,98 +1,358 @@
-/* The Restructuring Newsletter — site styling.
-   A small file on purpose: Material handles the layout, this sets the
-   publication's own voice (oxblood accent, law-report typography). */
+/* The Restructuring Brief — site styling.
+ *
+ * The aim is one publication, two media: a reader who downloads the PDF and a
+ * reader who stays on the page should recognise the same thing. So the same
+ * decisions apply here as in templates/issue.typ — oxblood accent, ragged
+ * right, labels above their text, the two concepts level with each other —
+ * adapted to a screen rather than translated literally.
+ */
 
 :root {
-  --rn-accent: #7a2230;
-  --rn-accent-soft: #f6eff0;
-  --rn-muted: #6d6a66;
-  --rn-panel: #f6f4f1;
-  --rn-hairline: #cdc8c0;
+  --rb-ink: #191919;
+  --rb-accent: #7a2230;
+  --rb-gold: #b8862b;
+  --rb-muted: #6d6a66;
+  --rb-panel: #f6f4f1;
+  --rb-hairline: #cdc8c0;
+  --rb-page: #ffffff;
 
-  /* Material's own tokens, so links and buttons pick up the accent too. */
   --md-typeset-a-color: #7a2230;
   --md-accent-fg-color: #9c2c3d;
 }
 
 [data-md-color-scheme="slate"] {
-  --rn-accent: #e0919c;
-  --rn-accent-soft: #2a1f21;
-  --rn-muted: #a9a49e;
-  --rn-panel: #22201f;
-  --rn-hairline: #3d3a37;
+  --rb-ink: #e8e4df;
+  --rb-accent: #e0919c;
+  --rb-gold: #d8a648;
+  --rb-muted: #a9a49e;
+  --rb-panel: #22201f;
+  --rb-hairline: #3d3a37;
+  --rb-page: #16150f;
 
   --md-typeset-a-color: #e0919c;
   --md-accent-fg-color: #eaa9b2;
 }
 
-/* Buttons: the primary one carries the publication's colour, not Material's. */
-.md-typeset .md-button {
-  border-color: var(--rn-accent);
-  color: var(--rn-accent);
+/* ---- the page itself ---------------------------------------------------- */
+
+.md-typeset {
+  font-size: 0.78rem;
+  line-height: 1.68;
 }
 
-.md-typeset .md-button--primary {
-  background-color: var(--rn-accent);
-  border-color: var(--rn-accent);
-  color: #fff;
+/* Ragged right, as in the PDF. Justified text on a screen, where the reader
+   controls the width, produces rivers at almost every window size. */
+.md-typeset p,
+.md-typeset li {
+  text-align: left;
+  hyphens: none;
 }
 
-.md-typeset .md-button:hover {
-  background-color: var(--rn-accent);
-  border-color: var(--rn-accent);
-  color: #fff;
+/* ---- masthead ----------------------------------------------------------- */
+
+.rb-masthead {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 0.7rem;
+  margin-bottom: 1.4rem;
+  border-bottom: 2px solid var(--rb-ink);
 }
 
-/* Jurisdiction tags: `UK` / `US` are written as inline code in the Markdown,
-   which keeps the source readable and lets them be styled here. */
-.md-typeset h3 code,
-.md-typeset li > code:first-child {
-  background: var(--rn-accent);
-  color: #fff;
-  font-size: 0.62em;
+.rb-crest {
+  width: 42px;
+  height: auto;
+  flex: 0 0 auto;
+}
+
+.rb-masthead-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.md-typeset .rb-masthead-text h1 {
+  margin: 0;
+  font-size: 1.32rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  padding: 0.2em 0.45em;
-  border-radius: 2px;
-  vertical-align: 0.22em;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  color: var(--rb-ink);
 }
 
-/* Section headings, set like a law report. */
+.md-typeset .rb-strapline {
+  margin: 0.25rem 0 0;
+  font-size: 0.68rem;
+  font-style: italic;
+  color: var(--rb-muted);
+}
+
+.md-typeset .rb-issue-meta {
+  flex: 0 0 auto;
+  text-align: right;
+  font-size: 0.6rem;
+  line-height: 1.6;
+  color: var(--rb-muted);
+}
+
+/* ---- section headings --------------------------------------------------- */
+
 .md-typeset h2 {
-  border-top: 2px solid var(--rn-accent);
-  padding-top: 0.5rem;
-  margin-top: 2.4rem;
-  font-size: 1.05rem;
-  letter-spacing: 0.1em;
+  margin: 2.6rem 0 0.9rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1.5px solid var(--rb-accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--rn-accent);
+  color: var(--rb-accent);
 }
 
 .md-typeset h3 {
-  margin-top: 1.6rem;
-  font-size: 1.15rem;
+  margin: 1.5rem 0 0.3rem;
+  font-size: 1.05rem;
+  line-height: 1.25;
 }
 
-/* The citation / venue line under each heading. */
-.md-typeset h3 + p em {
-  color: var(--rn-muted);
-  font-size: 0.82rem;
-}
-
-/* Bottom line, pulled out the way it is in the PDF. */
-.md-typeset .admonition.abstract {
-  border-left: 3px solid var(--rn-accent);
-  background: var(--rn-panel);
+.md-typeset h4 {
+  margin: 0.35rem 0 0.5rem;
   font-size: 0.95rem;
 }
 
-.md-typeset .admonition.abstract > .admonition-title {
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  font-size: 0.7rem;
+/* ---- jurisdiction tags -------------------------------------------------- */
+
+/* Written as inline code in the Markdown so the source stays readable. */
+.md-typeset h3 code,
+.md-typeset li > code:first-child {
+  background: var(--rb-accent);
+  color: #fff;
+  font-size: 0.58em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.22em 0.45em;
+  border-radius: 2px;
+  vertical-align: 0.25em;
+  box-shadow: none;
 }
 
-/* Subscribe form on the front page. */
+/* ---- shared small type -------------------------------------------------- */
+
+.md-typeset .rb-kind {
+  margin: 0;
+  font-size: 0.7rem;
+  color: var(--rb-accent);
+}
+
+.md-typeset .rb-meta {
+  margin: 0.2rem 0 0;
+  font-size: 0.68rem;
+  color: var(--rb-muted);
+}
+
+.md-typeset .rb-source {
+  margin: 0.5rem 0 0;
+  font-size: 0.68rem;
+  color: var(--rb-muted);
+}
+
+.md-typeset .rb-source a {
+  color: var(--rb-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.md-typeset .rb-source a:hover {
+  color: var(--rb-accent);
+}
+
+.md-typeset .rb-scope {
+  margin: -0.4rem 0 1rem;
+  font-size: 0.68rem;
+  font-style: italic;
+  color: var(--rb-muted);
+}
+
+/* Labels sit above their text, as in the PDF, so a reader can find the
+   holding without reading the facts. */
+.md-typeset .rb-label {
+  margin: 0 0 0.15rem;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--rb-accent);
+}
+
+/* ---- situation of the week ---------------------------------------------- */
+
+.rb-featured {
+  border-left: 3px solid var(--rb-gold);
+  padding: 0.1rem 0 0.1rem 1.1rem;
+  margin: 0.8rem 0 1.4rem;
+}
+
+.rb-featured h3 {
+  margin-top: 0.4rem;
+  font-size: 1.18rem;
+}
+
+/* ---- situations --------------------------------------------------------- */
+
+.md-typeset .rb-stage {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 1.5rem 0 0.2rem;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--rb-muted);
+}
+
+.md-typeset .rb-stage::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--rb-hairline);
+}
+
+.rb-situation + .rb-situation {
+  border-top: 1px solid var(--rb-hairline);
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+
+/* ---- case notes --------------------------------------------------------- */
+
+.rb-case {
+  border-left: 3px solid var(--rb-accent);
+  padding: 0.1rem 0 0.6rem 1.1rem;
+  margin: 0.8rem 0 2rem;
+}
+
+.rb-case h3 {
+  margin-top: 0.4rem;
+}
+
+.rb-bottomline {
+  border-top: 1px solid var(--rb-hairline);
+  border-bottom: 1px solid var(--rb-hairline);
+  padding: 0.7rem 0;
+  margin: 0.9rem 0 1.1rem;
+}
+
+.rb-bottomline p:last-child {
+  margin-bottom: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.rb-field {
+  margin-bottom: 0.9rem;
+}
+
+.rb-field p:last-child {
+  margin-bottom: 0;
+}
+
+.rb-background p:last-child {
+  color: var(--rb-muted);
+  font-size: 0.74rem;
+}
+
+.rb-background .rb-label {
+  color: var(--rb-muted);
+}
+
+/* ---- both sides of the table -------------------------------------------- */
+
+/* Two columns so the pairing is visible before either side is read — the
+   whole point of the section. They stack on a phone, where side by side would
+   mean two very narrow measures. */
+.rb-bothsides {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.6rem;
+  margin: 1rem 0;
+}
+
+.rb-side {
+  border-top: 2px solid var(--rb-accent);
+  padding-top: 0.6rem;
+}
+
+.rb-side p:last-child {
+  margin-bottom: 0;
+}
+
+.md-typeset .rb-seealso {
+  margin-top: 0.6rem;
+  font-size: 0.65rem;
+  font-style: italic;
+  color: var(--rb-muted);
+}
+
+.md-typeset .rb-pairing {
+  border-left: 2px solid var(--rb-gold);
+  padding-left: 0.8rem;
+  margin: 1.2rem 0 0;
+  font-style: italic;
+  color: var(--rb-muted);
+}
+
+/* ---- conditions --------------------------------------------------------- */
+
+.rb-numbers table {
+  width: 100%;
+}
+
+.md-typeset .rb-numbers th {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rb-accent);
+  background: none;
+  border-bottom: 1px solid var(--rb-hairline);
+}
+
+.md-typeset .rb-numbers td {
+  font-size: 0.75rem;
+  border-bottom: 1px solid var(--rb-hairline);
+  vertical-align: baseline;
+}
+
+.md-typeset .rb-numbers td:nth-child(2),
+.md-typeset .rb-numbers th:nth-child(2),
+.md-typeset .rb-numbers td:nth-child(3),
+.md-typeset .rb-numbers th:nth-child(3) {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.md-typeset .rb-numbers td:nth-child(3) {
+  color: var(--rb-muted);
+  font-size: 0.68rem;
+}
+
+.md-typeset .rb-numbers td a {
+  font-size: 0.64rem;
+  color: var(--rb-muted);
+}
+
+/* ---- colophon ----------------------------------------------------------- */
+
+.rb-colophon {
+  border-top: 2px solid var(--rb-ink);
+  margin-top: 3rem;
+  padding-top: 0.9rem;
+  font-size: 0.68rem;
+  color: var(--rb-muted);
+}
+
+/* ---- front page --------------------------------------------------------- */
+
 form.subscribe {
   display: flex;
   flex-wrap: wrap;
@@ -100,37 +360,37 @@ form.subscribe {
   align-items: center;
   margin: 1.2rem 0 2rem;
   padding: 1.1rem;
-  background: var(--rn-panel);
-  border-left: 3px solid var(--rn-accent);
+  background: var(--rb-panel);
+  border-left: 3px solid var(--rb-accent);
   border-radius: 2px;
 }
 
 form.subscribe label {
   flex: 0 0 100%;
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--rn-muted);
+  color: var(--rb-muted);
 }
 
 form.subscribe input[type="email"] {
   flex: 1 1 16rem;
   padding: 0.6rem 0.7rem;
   font: inherit;
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   color: inherit;
   background: var(--md-default-bg-color);
-  border: 1px solid var(--rn-hairline);
+  border: 1px solid var(--rb-hairline);
   border-radius: 2px;
 }
 
 form.subscribe input[type="submit"] {
   padding: 0.6rem 1.3rem;
   font: inherit;
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: #fff;
-  background: var(--rn-accent);
+  background: var(--rb-accent);
   border: 0;
   border-radius: 2px;
   cursor: pointer;
@@ -140,13 +400,92 @@ form.subscribe input[type="submit"]:hover {
   filter: brightness(1.15);
 }
 
-/* Source links sit below an item, so they should not shout. */
-.md-typeset p > a[href^="http"]:only-child {
-  font-size: 0.85rem;
+/* ---- buttons ------------------------------------------------------------ */
+
+.md-typeset .md-button {
+  border-color: var(--rb-accent);
+  color: var(--rb-accent);
+  font-size: 0.7rem;
 }
 
-@media screen and (max-width: 44em) {
-  .md-typeset h2 {
-    font-size: 0.95rem;
+.md-typeset .md-button--primary {
+  background-color: var(--rb-accent);
+  border-color: var(--rb-accent);
+  color: #fff;
+}
+
+.md-typeset .md-button:hover {
+  background-color: var(--rb-accent);
+  border-color: var(--rb-accent);
+  color: #fff;
+}
+
+.md-typeset .rb-pdf {
+  margin-bottom: 1.5rem;
+}
+
+/* ---- narrow screens ----------------------------------------------------- */
+
+@media screen and (max-width: 59.9em) {
+  .rb-bothsides {
+    grid-template-columns: 1fr;
+    gap: 1.8rem;
   }
+
+  .rb-masthead {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .md-typeset .rb-issue-meta {
+    flex: 1 1 100%;
+    text-align: left;
+  }
+
+  .md-typeset .rb-masthead-text h1 {
+    font-size: 1.1rem;
+  }
+
+  /* A three-column table does not fit a phone; let it scroll rather than
+     squeezing the numbers into two characters a line. */
+  .rb-numbers {
+    overflow-x: auto;
+  }
+}
+
+/* ---- front page --------------------------------------------------------- */
+
+.rb-masthead--home {
+  border-bottom-width: 3px;
+  padding-bottom: 0.9rem;
+  margin-bottom: 1.2rem;
+}
+
+.rb-masthead--home .rb-crest {
+  width: 56px;
+}
+
+.md-typeset .rb-masthead--home h1 {
+  font-size: 1.6rem;
+}
+
+.md-typeset .rb-audience {
+  font-size: 0.78rem;
+  color: var(--rb-muted);
+  max-width: 34rem;
+}
+
+.md-typeset .rb-issue-line {
+  margin-bottom: 0.7rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rb-muted);
+}
+
+/* The source and period under an indicator are one aside, at one size. */
+.md-typeset .rb-num-src,
+.md-typeset .rb-num-src a {
+  font-size: 0.64rem;
+  color: var(--rb-muted);
 }

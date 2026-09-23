@@ -33,9 +33,23 @@ def _source_link(source) -> str:
     return f"[{source.title}]({source.url})"
 
 
+def _source_html(source) -> str:
+    """Markdown is not processed inside a plain HTML block, so a source line
+    living in a styled <p> has to be written as HTML."""
+    if source is None:
+        return ""
+    return f'<a href="{source.url}">{source.title}</a>' 
+
+
 def issue_markdown(issue: Issue, editorial: dict, pdf_href: str) -> str:
-    """One issue as a MkDocs page."""
+    """One issue as a MkDocs page.
+
+    Emits explicit wrappers (`rb-featured`, `rb-case`, `rb-bothsides`…) rather
+    than bare Markdown, so the stylesheet can give the page the same shape as
+    the PDF. `md_in_html` lets Markdown keep working inside them.
+    """
     pub = editorial["publication"]
+    sections = editorial["sections"]
     out: list[str] = []
 
     out.append("---")
@@ -43,12 +57,24 @@ def issue_markdown(issue: Issue, editorial: dict, pdf_href: str) -> str:
     out.append(f"date: {issue.date_published.isoformat()}")
     out.append("---")
     out.append("")
-    out.append(f"# Issue {issue.issue}")
+
+    # -- masthead, echoing the PDF -----------------------------------------
+    out.append('<div class="rb-masthead" markdown>')
+    out.append('<img src="../../assets/crest.svg" alt="" class="rb-crest">')
+    out.append('<div class="rb-masthead-text" markdown>')
+    # The wordmark IS the page heading: hiding a separate h1 confused the
+    # theme's scroll behaviour, and the page should have a real heading anyway.
+    out.append(f'# {pub["name"]}')
     out.append("")
-    out.append(
-        f"**{issue.period_label}** · about a {issue.read_minutes()} minute read · "
-        f"[Download the PDF]({pdf_href})"
-    )
+    out.append(f'<p class="rb-strapline">{pub["strapline"]}</p>')
+    out.append("</div>")
+    out.append('<div class="rb-issue-meta" markdown>')
+    out.append(f"Issue {issue.issue}<br>{issue.period_label}<br>")
+    out.append(f"about a {issue.read_minutes()} minute read")
+    out.append("</div>")
+    out.append("</div>")
+    out.append("")
+    out.append(f'[Download the PDF]({pdf_href}){{ .md-button .rb-pdf }}')
     out.append("")
 
     if issue.is_specimen:
@@ -57,7 +83,7 @@ def issue_markdown(issue: Issue, editorial: dict, pdf_href: str) -> str:
         out.append("")
 
     # -- headlines ---------------------------------------------------------
-    out.append("## The week in three lines")
+    out.append(f"## {sections['headlines']['label']}")
     out.append("")
     for i, headline in enumerate(issue.headlines, 1):
         out.append(f"{i}. {headline}")
@@ -66,57 +92,72 @@ def issue_markdown(issue: Issue, editorial: dict, pdf_href: str) -> str:
     # -- situation of the week ---------------------------------------------
     if issue.featured:
         f = issue.featured
-        out.append(f"## {editorial['sections']['featured']['label']}")
+        out.append(f"## {sections['featured']['label']}")
         out.append("")
+        out.append('<div class="rb-featured" markdown>')
         out.append(f"### {tag(f.jurisdiction)} {f.name}")
         out.append("")
-        meta = [b for b in (f.kind, f.venue, f.debt, f.parties) if b]
-        out.append("*" + " · ".join(meta) + "*")
+        out.append(f'<p class="rb-kind">{f.kind}</p>')
+        meta = [b for b in (f.venue, f.debt, f.parties) if b]
+        if meta:
+            out.append(f'<p class="rb-meta">{" · ".join(meta)}</p>')
         out.append("")
         for para in f.paragraphs:
             out.append(para)
             out.append("")
         if f.source:
-            out.append(f"→ {_source_link(f.source)}")
-            out.append("")
+            out.append(f'<p class="rb-source">→ {_source_html(f.source)}</p>')
+        out.append("</div>")
+        out.append("")
 
     # -- situations ---------------------------------------------------------
-    stages = editorial["sections"]["situations"].get("stages", {})
+    stages = sections["situations"].get("stages", {})
     groups = issue.grouped_situations(stages)
     if groups:
-        out.append(f"## {editorial['sections']['situations']['label']}")
+        out.append(f"## {sections['situations']['label']}")
         out.append("")
         for label, items in groups:
-            out.append(f"**{label}**")
+            out.append(f'<p class="rb-stage">{label}</p>')
             out.append("")
-            for s_item in items:
-                out.append(f"### {tag(s_item.jurisdiction)} {s_item.name}")
+            for item in items:
+                out.append('<div class="rb-situation" markdown>')
+                out.append(f"### {tag(item.jurisdiction)} {item.name}")
                 out.append("")
-                meta = [b for b in (s_item.kind, s_item.venue, s_item.debt, s_item.parties) if b]
-                out.append("*" + " · ".join(meta) + "*")
+                out.append(f'<p class="rb-kind">{item.kind}</p>')
+                meta = [b for b in (item.venue, item.debt, item.parties) if b]
+                if meta:
+                    out.append(f'<p class="rb-meta">{" · ".join(meta)}</p>')
                 out.append("")
-                out.append(s_item.notable)
+                out.append(item.notable)
                 out.append("")
-                if s_item.source:
-                    out.append(f"→ {_source_link(s_item.source)}")
-                    out.append("")
+                if item.source:
+                    out.append(f'<p class="rb-source">→ {_source_html(item.source)}</p>')
+                out.append("</div>")
+                out.append("")
 
-    # -- case notes --------------------------------------------------------
+    # -- case notes ---------------------------------------------------------
     if issue.cases:
-        out.append("## Case notes")
+        out.append(f"## {sections['cases']['label']}")
         out.append("")
-        out.append("*United Kingdom and United States only — the two systems this newsletter analyses rather than merely reports.*")
+        out.append(
+            '<p class="rb-scope">United Kingdom and United States only — the two '
+            "systems this newsletter analyses rather than merely reports.</p>"
+        )
         out.append("")
         for case in issue.cases:
+            out.append('<div class="rb-case" markdown>')
             out.append(f"### {tag(case.jurisdiction)} {case.name}")
             out.append("")
             meta = [b for b in (case.citation, case.court, case.judge) if b]
             if case.date:
                 meta.append(f"{case.date:%-d %B %Y}")
-            out.append("*" + " · ".join(meta) + "*")
+            out.append(f'<p class="rb-meta">{" · ".join(meta)}</p>')
             out.append("")
-            out.append(f'!!! abstract "Bottom line"')
-            out.append(f"    {case.bottom_line}")
+            out.append('<div class="rb-bottomline" markdown>')
+            out.append('<p class="rb-label">Bottom line</p>')
+            out.append("")
+            out.append(case.bottom_line)
+            out.append("</div>")
             out.append("")
             for label, text in (
                 ("Facts", case.facts),
@@ -124,61 +165,89 @@ def issue_markdown(issue: Issue, editorial: dict, pdf_href: str) -> str:
                 ("Holding", case.holding),
                 ("Why it matters", case.why_it_matters),
             ):
-                out.append(f"**{label}.** {text}")
+                out.append('<div class="rb-field" markdown>')
+                out.append(f'<p class="rb-label">{label}</p>')
                 out.append("")
-            out.append('??? info "Background — for readers new to this area"')
-            out.append(f"    {case.background}")
+                out.append(text)
+                out.append("</div>")
+                out.append("")
+            out.append('<div class="rb-field rb-background" markdown>')
+            out.append('<p class="rb-label">Background — for readers new to this area</p>')
+            out.append("")
+            out.append(case.background)
+            out.append("</div>")
             out.append("")
             if case.source:
-                out.append(f"→ {_source_link(case.source)}")
-                out.append("")
+                out.append(f'<p class="rb-source">→ {_source_html(case.source)}</p>')
+            out.append("</div>")
+            out.append("")
 
     # -- both sides of the table -------------------------------------------
     if issue.concepts:
-        out.append(f"## {editorial['sections']['concepts']['label']}")
+        out.append(f"## {sections['concepts']['label']}")
         out.append("")
+        out.append('<div class="rb-bothsides" markdown>')
         for side, concept in issue.concepts.pair():
-            out.append(f"### {side} — {concept.term}")
+            out.append('<div class="rb-side" markdown>')
+            out.append(f'<p class="rb-label">{side}</p>')
+            out.append("")
+            out.append(f"#### {concept.term}")
             out.append("")
             out.append(concept.body)
             out.append("")
             if concept.see_also:
-                out.append("*See also: " + " · ".join(concept.see_also) + "*")
-                out.append("")
+                out.append(
+                    f'<p class="rb-seealso">See also: {" · ".join(concept.see_also)}</p>'
+                )
+            out.append("</div>")
+        out.append("</div>")
+        out.append("")
         if issue.concepts.pairing:
-            out.append(f"> {issue.concepts.pairing}")
+            out.append(f'<p class="rb-pairing">{issue.concepts.pairing}</p>')
             out.append("")
 
-    # -- numbers -----------------------------------------------------------
+    # -- conditions ---------------------------------------------------------
     if issue.conditions or issue.numbers:
-        out.append("## Conditions")
+        out.append(f"## {sections['conditions']['label']}")
         out.append("")
     if issue.conditions:
         out.append(issue.conditions)
         out.append("")
     if issue.numbers:
-        out.append("| Indicator | Latest | Period | Source |")
-        out.append("| --- | --- | --- | --- |")
+        out.append('<div class="rb-numbers" markdown>')
+        out.append("")
+        out.append("| Indicator | Latest | On the week |")
+        out.append("| --- | --- | --- |")
         for n in issue.numbers:
+            note = []
+            if n.source:
+                note.append(_source_html(n.source))
+            if n.period:
+                note.append(n.period)
+            aside = (
+                f'<br><span class="rb-num-src">{" · ".join(note)}</span>' if note else ""
+            )
             out.append(
-                f"| {n.label} | {n.value} | {n.period} | {_source_link(n.source)} |"
+                f"| {n.label}{aside} | **{n.value}** | {n.change or '—'} |"
             )
         out.append("")
+        out.append("</div>")
+        out.append("")
 
-    # -- watchlist ---------------------------------------------------------
+    # -- watchlist ----------------------------------------------------------
     if issue.watchlist:
-        out.append("## Watchlist")
+        out.append(f"## {sections['watchlist']['label']}")
         out.append("")
         for item in issue.watchlist:
             when = f"**{item.date:%-d %b}** · " if item.date else ""
             out.append(f"- {when}{tag(item.jurisdiction)} {item.text}")
         out.append("")
 
-    out.append("---")
-    out.append("")
-    out.append(f"*{' '.join(editorial['disclaimer'].split())}*")
+    out.append('<div class="rb-colophon" markdown>')
+    out.append(" ".join(editorial["disclaimer"].split()))
     out.append("")
     out.append(f"[Download this issue as a PDF]({pdf_href}){{ .md-button }}")
+    out.append("</div>")
     out.append("")
     return "\n".join(out)
 
@@ -209,15 +278,21 @@ def index_markdown(issues: list[Issue], editorial: dict) -> str:
         "  - navigation",
         "---",
         "",
-        f"# {pub['name']}",
+        '<div class="rb-masthead rb-masthead--home" markdown>',
+        '<img src="assets/crest.svg" alt="" class="rb-crest">',
+        '<div class="rb-masthead-text" markdown>',
+        f'# {pub["name"]}',
         "",
-        f"*{pub['strapline']}*",
+        f'<p class="rb-strapline">{pub["strapline"]}</p>',
+        "</div>",
+        "</div>",
         "",
-        " ".join(pub["audience"].split()),
+        '<p class="rb-audience">' + " ".join(pub["audience"].split()) + "</p>",
         "",
         "## This week",
         "",
-        f"### [Issue {latest.issue} — {latest.period_label}](issues/{latest.slug}.md)",
+        f'<p class="rb-issue-line">Issue {latest.issue} · {latest.period_label} · '
+        f"about a {latest.read_minutes()} minute read</p>",
         "",
     ]
     for headline in latest.headlines:
@@ -229,8 +304,8 @@ def index_markdown(issues: list[Issue], editorial: dict) -> str:
         "",
         "## Get it by email",
         "",
-        "One email a week. No tracking beyond what the mail service needs to send it,",
-        "and an unsubscribe link in every issue.",
+        "One email a week. No tracking beyond what the mail service needs to send",
+        "it, and an unsubscribe link in every issue.",
         "",
         subscribe_form(editorial),
         "",
