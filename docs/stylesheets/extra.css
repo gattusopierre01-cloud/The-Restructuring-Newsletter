@@ -489,3 +489,36 @@ form.subscribe input[type="submit"]:hover {
   font-size: 0.64rem;
   color: var(--rb-muted);
 }
+
+/* ---- archive ------------------------------------------------------------ */
+
+.rb-archive-item {
+  border-top: 1px solid var(--rb-hairline);
+  padding-top: 0.9rem;
+  margin-bottom: 1.6rem;
+}
+
+.md-typeset .rb-archive-item h3 {
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+.md-typeset .rb-archive-meta {
+  margin: 0.15rem 0 0.6rem;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rb-muted);
+}
+
+.md-typeset .rb-archive-cases,
+.md-typeset .rb-archive-links {
+  margin: 0.25rem 0 0;
+  font-size: 0.68rem;
+  color: var(--rb-muted);
+}
+
+.md-typeset .rb-archive-links {
+  margin-top: 0.6rem;
+}

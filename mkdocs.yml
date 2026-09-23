@@ -52,6 +52,7 @@ nav:
   - This week: index.md
   - Archive: archive.md
   - Glossary: glossary.md
+  - Subscribe: subscribe.md
   - About: about.md
 
 # Issue pages are generated and reached from the archive, not the top nav.
@@ -75,9 +76,14 @@ extra_css:
 
 extra:
   social:
+    # Replace with the real profile before launch, or delete the entry —
+    # a link to linkedin.com's front page is worse than no link.
     - icon: fontawesome/brands/linkedin
       link: https://www.linkedin.com/
-      name: The newsletter on LinkedIn
+      name: The Restructuring Brief on LinkedIn
+    - icon: fontawesome/solid/envelope
+      link: subscribe/
+      name: Subscribe by email
   generator: false
 
 # Fail the build on a broken internal link rather than shipping one.

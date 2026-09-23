@@ -304,34 +304,94 @@ def index_markdown(issues: list[Issue], editorial: dict) -> str:
         "",
         "## Get it by email",
         "",
-        "One email a week. No tracking beyond what the mail service needs to send",
-        "it, and an unsubscribe link in every issue.",
+        "One email a week, carrying the whole issue. Unsubscribe in one click.",
+        "[What you are signing up for](subscribe.md).",
         "",
         subscribe_form(editorial),
         "",
-        "## Recent issues",
+        "## Previously",
         "",
     ]
-    for issue in issues[:6]:
-        out.append(
-            f"- **[Issue {issue.issue}](issues/{issue.slug}.md)** — {issue.period_label}"
-        )
-    out += ["", "[Full archive](archive.md)", ""]
+    # The current issue is above; this is where it goes when it stops being
+    # current.
+    earlier = issues[1:6]
+    if earlier:
+        for issue in earlier:
+            headline = issue.headlines[0] if issue.headlines else ""
+            out.append(
+                f"- **[Issue {issue.issue}](issues/{issue.slug}.md)** · "
+                f"{issue.period_label}  \n  {headline}"
+            )
+        out += ["", "[Every issue](archive.md){ .md-button }", ""]
+    else:
+        out += [
+            "This is the first issue. Past issues will collect here, and in the",
+            "[archive](archive.md).",
+            "",
+        ]
     return "\n".join(out)
 
 
 def archive_markdown(issues: list[Issue], editorial: dict) -> str:
-    out = ["# Archive", "", "Every issue, newest first.", ""]
-    out.append("| Issue | Period | Cases | Read | PDF |")
-    out.append("| --- | --- | --- | --- | --- |")
+    """Back issues, newest first, grouped by month.
+
+    Each entry shows enough to decide whether to open it — what was covered
+    and which decisions were noted — rather than only a date and a number.
+    """
+    out = [
+        "# Archive",
+        "",
+        "Every issue published so far. The current one is on",
+        "[this week](index.md).",
+        "",
+    ]
+
+    current_month = None
     for issue in issues:
-        cases = ", ".join(c.name for c in issue.cases) or "—"
-        pdf = f"pdf/{pdf_name(issue, editorial)}"
+        month = f"{issue.date_published:%B %Y}"
+        if month != current_month:
+            out.append(f"## {month}")
+            out.append("")
+            current_month = month
+
+        out.append('<div class="rb-archive-item" markdown>')
         out.append(
-            f"| [{issue.issue}](issues/{issue.slug}.md) | {issue.period_label} | "
-            f"{cases} | {issue.read_minutes()} min | [PDF]({pdf}) |"
+            f"### [Issue {issue.issue} — {issue.period_label}](issues/{issue.slug}.md)"
         )
-    out.append("")
+        out.append("")
+        marks = []
+        if issue.is_specimen:
+            marks.append("specimen")
+        marks.append(f"{issue.read_minutes()} minute read")
+        jurisdictions = sorted(
+            {s.jurisdiction for s in issue.situations}
+            | ({issue.featured.jurisdiction} if issue.featured else set())
+        )
+        if jurisdictions:
+            marks.append(" ".join(jurisdictions))
+        out.append(f'<p class="rb-archive-meta">{" · ".join(marks)}</p>')
+        out.append("")
+
+        if issue.featured:
+            out.append(f"**{issue.featured.name}** — {issue.featured.kind}")
+            out.append("")
+        if issue.cases:
+            names = ", ".join(c.name for c in issue.cases)
+            out.append(f'<p class="rb-archive-cases">Case notes: {names}</p>')
+            out.append("")
+        if issue.concepts:
+            terms = " · ".join(c.term for _, c in issue.concepts.pair())
+            out.append(f'<p class="rb-archive-cases">Concepts: {terms}</p>')
+            out.append("")
+
+        out.append(
+            f'<p class="rb-archive-links">'
+            f'<a href="issues/{issue.slug}/">Read</a> · '
+            f'<a href="pdf/{pdf_name(issue, editorial)}">PDF</a></p>'
+        )
+        out.append("</div>")
+        out.append("")
+
     return "\n".join(out)
 
 
@@ -399,6 +459,44 @@ def copy_assets() -> list[Path]:
     return copied
 
 
+def subscribe_markdown(editorial: dict) -> str:
+    """A page to send people to. A form buried on the front page is hard to
+    link to from LinkedIn or an email signature."""
+    pub = editorial["publication"]
+    return "\n".join(
+        [
+            "# Subscribe",
+            "",
+            f"*{pub['strapline']}*",
+            "",
+            "One email a week, on a Monday. It carries the whole issue — the",
+            "situation of the week, the case notes, the concepts and the market",
+            "backdrop — so you can read it without leaving your inbox. A PDF of",
+            "each issue is linked at the top if you would rather have that.",
+            "",
+            subscribe_form(editorial),
+            "",
+            "## What you are signing up for",
+            "",
+            "- **One email a week.** Nothing else. No launches, no offers.",
+            "- **Unsubscribe in one click**, from a link in every issue.",
+            "- **Your address is used to send you the newsletter and nothing else.**",
+            "  It is not sold, shared or passed to anyone.",
+            "",
+            "You will be asked to confirm by email before anything is sent, which",
+            "is both a legal requirement and a good way of making sure the address",
+            "is right.",
+            "",
+            "## Not ready?",
+            "",
+            "The [archive](archive.md) is open and always will be. So is the",
+            "[glossary](glossary.md), which collects every concept explained so",
+            "far.",
+            "",
+        ]
+    )
+
+
 def main() -> int:
     editorial = load_config("editorial")
     issues = load_all_issues()
@@ -425,6 +523,7 @@ def main() -> int:
         ("index.md", index_markdown(issues, editorial)),
         ("archive.md", archive_markdown(issues, editorial)),
         ("glossary.md", glossary_markdown(issues)),
+        ("subscribe.md", subscribe_markdown(editorial)),
     ):
         path = DOCS / name
         path.write_text(content, encoding="utf-8")
