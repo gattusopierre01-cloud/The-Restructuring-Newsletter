@@ -86,8 +86,14 @@ sections:
     # usually only matters because of a legal test.
     max_words_each: 120
     pairing_expected: true          # a warning when unpaired, never a failure
+  conditions:
+    label: Conditions
+    # The macro backdrop, read rather than merely listed. Spreads lead filings
+    # by six to eighteen months, so this is the section that tells a reader
+    # whether the situations above are a trend or a coincidence.
+    max_words: 140
   numbers:
-    label: Numbers
+    label: Conditions          # the table sits under the conditions note
     min_items: 0
     max_items: 6
     require_source: true

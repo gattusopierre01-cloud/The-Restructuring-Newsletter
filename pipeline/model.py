@@ -152,6 +152,7 @@ class Issue:
     situations: list[Situation] = field(default_factory=list)
     cases: list[Case] = field(default_factory=list)
     concepts: Concepts | None = None
+    conditions: str = ""
     numbers: list[Number] = field(default_factory=list)
     watchlist: list[WatchItem] = field(default_factory=list)
     specimen_notice: str = ""
@@ -203,6 +204,8 @@ class Issue:
             ]
         if self.concepts:
             chunks += [self.concepts.law.body, self.concepts.finance.body]
+        if self.conditions:
+            chunks.append(self.conditions)
         chunks += [item.text for item in self.watchlist]
         return sum(len(chunk.split()) for chunk in chunks if chunk)
 
@@ -319,6 +322,7 @@ def parse_issue(raw: dict[str, Any]) -> Issue:
             for c in raw.get("cases") or []
         ],
         concepts=concepts,
+        conditions=_clean(raw.get("conditions")),
         numbers=[
             Number(
                 label=_clean(n.get("label")),

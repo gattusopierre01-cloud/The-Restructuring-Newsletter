@@ -235,6 +235,18 @@ def validate_issue(issue: Issue, editorial: dict) -> Report:
                 "issue says how they connect"
             )
 
+    # -- conditions ---------------------------------------------------------
+    limit = sections["conditions"]["max_words"]
+    if not issue.conditions:
+        rep.warn(
+            "no conditions note — the numbers mean little without a line "
+            "saying what they imply"
+        )
+    elif _words(issue.conditions) > limit:
+        rep.error(
+            f"conditions: {_words(issue.conditions)} words, limit {limit}"
+        )
+
     # -- numbers and watchlist --------------------------------------------
     rules = sections["numbers"]
     _check_count(rep, rules, "numbers", issue.numbers)

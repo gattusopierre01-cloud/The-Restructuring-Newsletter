@@ -59,7 +59,7 @@
   text(fill: white, size: 7pt, weight: "bold", tracking: 0.08em, font: "DejaVu Sans Mono")[#upper(j)],
 )
 
-#let section-head(title, note: "") = block(above: 1.3em, below: 0.7em, width: 100%, sticky: true)[
+#let section-head(title, note: "") = block(above: 1.05em, below: 0.6em, width: 100%, sticky: true)[
   #grid(
     columns: (1fr, auto), align: (left + bottom, right + bottom),
     text(size: 10pt, weight: "bold", tracking: 0.2em, fill: accent)[#upper(title)],
@@ -219,11 +219,11 @@
 
 #if d.concepts != none {
   section-head(d.labels.concepts, note: "one from each seat")
-  // Breakable: an atomic two-column block that will not fit leaves a hole on
-  // the page it could not start on.
-  block(width: 100%, breakable: true)[
+  // Unbreakable: the two sides are meant to be read level with each other,
+  // which a page break destroys. It moves whole to the next page instead.
+  block(width: 100%, breakable: false)[
     #grid(
-      columns: (1fr, 1fr), gutter: 18pt,
+      columns: (1fr, 1fr), gutter: 16pt,
       ..d.concepts.sides.map(side => [
         #line(length: 100%, stroke: 1.5pt + accent)
         #v(0.4em)
@@ -239,7 +239,7 @@
       ]),
     )
     #if d.concepts.pairing != "" [
-      #v(0.9em)
+      #v(0.7em)
       #block(width: 100%, inset: (left: 10pt), stroke: (left: 2pt + gold))[
         #text(size: 10pt, style: "italic", fill: rgb("#45413d"))[#d.concepts.pairing]
       ]
@@ -249,26 +249,44 @@
 
 // -- numbers -----------------------------------------------------------------
 
+#if d.conditions != "" or d.numbers.len() > 0 {
+  section-head(d.labels.numbers, note: "what the market is pricing")
+}
+
+#if d.conditions != "" {
+  block(width: 100%, below: 0.7em, breakable: true)[
+    #par(justify: false)[#text(size: 10.5pt)[#d.conditions]]
+  ]
+}
+
 #if d.numbers.len() > 0 {
-  section-head(d.labels.numbers)
+  // Three columns: what it is, where it stands, which way it moved. The
+  // direction is the part a reader acts on, so it gets a column of its own
+  // rather than being buried under the value.
   table(
     columns: (1fr, auto, auto), align: (left + horizon, right + horizon, right + horizon),
-    stroke: (x, y) => (bottom: 0.4pt + hairline), inset: (x: 2pt, y: 9pt),
+    stroke: (x, y) => (bottom: 0.4pt + hairline), inset: (x: 2pt, y: 7pt),
     table.header(
       text(size: 7.5pt, weight: "bold", tracking: 0.16em, fill: accent)[INDICATOR],
       text(size: 7.5pt, weight: "bold", tracking: 0.16em, fill: accent)[LATEST],
-      text(size: 7.5pt, weight: "bold", tracking: 0.16em, fill: accent)[PERIOD],
+      text(size: 7.5pt, weight: "bold", tracking: 0.16em, fill: accent)[ON THE WEEK],
     ),
     ..d.numbers.map(n => (
       [
         #text(size: 10.2pt)[#n.label]
         #if n.source != none [
           #linebreak()
-          #text(size: 7.8pt, fill: muted)[#link(n.source.url)[#n.source.title]]
+          #text(size: 7.8pt, fill: muted)[
+            #link(n.source.url)[#n.source.title]#if n.period != "" [ · #n.period]
+          ]
         ]
       ],
       text(size: 10.2pt, weight: "bold")[#n.value],
-      text(size: 9.2pt, fill: muted)[#n.period],
+      if n.change != none {
+        text(size: 9pt, fill: muted)[#n.change]
+      } else {
+        text(size: 9pt, fill: muted)[—]
+      },
     )).flatten(),
   )
 }
@@ -285,15 +303,16 @@
       tag(w.jurisdiction),
       text(size: 10.3pt)[#w.text],
     )
-    #v(0.6em)
+    #v(0.45em)
   ]
 }
 
-#v(1.0em)
-#line(length: 100%, stroke: 0.8pt + ink)
-#v(0.5em)
-#block(width: 100%)[
+// The colophon is one unit. Splitting it stranded the subscribe line alone on
+// a page of its own.
+#block(width: 100%, breakable: false, above: 0.75em)[
+  #line(length: 100%, stroke: 0.8pt + ink)
+  #v(0.4em)
   #text(size: 8.4pt, fill: muted)[#d.disclaimer]
-  #v(0.5em)
+  #v(0.4em)
   #text(size: 8.6pt)[Archive and subscribe: #link(d.site_url)[#d.site_url_label]]
 ]

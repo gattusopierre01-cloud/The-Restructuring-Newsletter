@@ -177,28 +177,36 @@ concepts:
       the first move in a bid for control.
     see_also: [superpriority, priming lien, roll-up, exit financing]
 
+# ---------------------------------------------------------------------------
+# Conditions — the macro backdrop, read rather than listed
+# ---------------------------------------------------------------------------
+conditions: >
+  The high-yield index sits at 268 basis points over treasuries, three tighter
+  over the week and close to its post-pandemic lows. The CCC and lower tier is
+  at 1,077, roughly four times the index. That gap is the picture: money is
+  available on easy terms to anything with a story, and priced for failure at
+  the bottom. It explains the week. Arxada pushed its maturities out three
+  years with no creditor voting against, which is what an amend-and-extend
+  looks like when refinancing markets are open. airBaltic raised €350m of new
+  money while filing for bankruptcy. Neither is a company caught in a credit
+  cycle; both are specific problems in a market otherwise lending freely.
+  Distress, for now, is idiosyncratic rather than systemic.
+
 numbers:
-  - label: airBaltic 2029 bonds
-    value: Low 20s
-    change: From the mid-90s in January 2026
-    period: Pre-filing
+  - label: US high yield — spread over treasuries
+    value: 268 bp
+    change: 3 bp tighter over the week to 18 September
+    period: Daily close
     source:
-      title: Case summary — Bondoro
-      url: https://bondoro.com/air-baltic/
-  - label: airBaltic superpriority DIP
-    value: SOFR + 800
-    change: 5% upfront and backstop fees
-    period: 12 months
+      title: FRED series BAMLH0A0HYM2
+      url: https://fred.stlouisfed.org/series/BAMLH0A0HYM2
+  - label: US CCC and lower — spread
+    value: 1,077 bp
+    change: 8 bp tighter since 15 September
+    period: Daily close, 21 September
     source:
-      title: Case summary — Bondoro
-      url: https://bondoro.com/air-baltic/
-  - label: England and Wales — registered company insolvencies
-    value: See latest release
-    change: null
-    period: Monthly
-    source:
-      title: Insolvency Service monthly statistics
-      url: https://www.gov.uk/government/collections/monthly-insolvency-statistics
+      title: FRED series BAMLH0A3HYC
+      url: https://fred.stlouisfed.org/series/BAMLH0A3HYC
 
 watchlist:
   - date: null

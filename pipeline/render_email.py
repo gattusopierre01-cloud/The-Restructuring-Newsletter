@@ -134,9 +134,13 @@ def body_markdown(issue: Issue, editorial: dict) -> str:
             out.append(f"> {issue.concepts.pairing}")
             out.append("")
 
-    if issue.numbers:
-        out.append("## Numbers")
+    if issue.conditions or issue.numbers:
+        out.append("## Conditions")
         out.append("")
+    if issue.conditions:
+        out.append(issue.conditions)
+        out.append("")
+    if issue.numbers:
         for n in issue.numbers:
             line = f"- **{n.label}** — {n.value}"
             if n.period:

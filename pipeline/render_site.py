@@ -150,9 +150,13 @@ def issue_markdown(issue: Issue, editorial: dict, pdf_href: str) -> str:
             out.append("")
 
     # -- numbers -----------------------------------------------------------
-    if issue.numbers:
-        out.append("## Numbers")
+    if issue.conditions or issue.numbers:
+        out.append("## Conditions")
         out.append("")
+    if issue.conditions:
+        out.append(issue.conditions)
+        out.append("")
+    if issue.numbers:
         out.append("| Indicator | Latest | Period | Source |")
         out.append("| --- | --- | --- | --- |")
         for n in issue.numbers:

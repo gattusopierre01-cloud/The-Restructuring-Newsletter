@@ -138,6 +138,7 @@ def issue_to_dict(issue: Issue, editorial: dict) -> dict:
                 ],
             }
         ),
+        "conditions": issue.conditions,
         "numbers": [
             {
                 "label": n.label,
