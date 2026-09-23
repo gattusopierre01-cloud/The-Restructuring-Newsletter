@@ -1,0 +1,86 @@
+name: Draft next issue
+
+# Collects the week's candidates and the market backdrop, then opens a pull
+# request with a skeleton issue. The drafting step — a model filling the
+# fields — is phase 4 and is not wired in yet, so for now this gathers the raw
+# material and gets out of the way.
+#
+# The schedule is commented out until the collectors have been watched for a
+# couple of weeks. Run it by hand from the Actions tab in the meantime.
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "How many days to look back"
+        required: false
+        default: "10"
+        type: string
+  # schedule:
+  #   - cron: "0 5 * * 1"   # Mondays, 05:00 UTC
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Check which feeds are alive
+        # Feed URLs rot, and a silent zero looks exactly like a quiet week.
+        # Never fail the run over this — just report it.
+        continue-on-error: true
+        run: python -m pipeline.collect --check-feeds
+
+      - name: Collect candidates and the market backdrop
+        env:
+          COURTLISTENER_TOKEN: ${{ secrets.COURTLISTENER_TOKEN }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: python -m pipeline.collect --days "${{ inputs.days || '10' }}" --market
+
+      - name: Create the skeleton issue
+        run: python -m pipeline.new_issue
+
+      - name: Keep the candidates and the numbers for reference
+        uses: actions/upload-artifact@v4
+        with:
+          name: candidates
+          path: |
+            build/candidates.json
+            build/market.json
+          if-no-files-found: warn
+
+      - name: Open a pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: draft/next-issue
+          title: "Draft: next issue"
+          commit-message: "Draft next issue from this week's candidates"
+          add-paths: issues/
+          delete-branch: true
+          body: |
+            Skeleton issue created from this week's candidates. The candidate
+            list and the market strip are attached to the run as artifacts.
+
+            **Before merging**
+            - [ ] Every case note links to the judgment itself, not a note about it
+            - [ ] Each holding checked against the primary source
+            - [ ] **Every date verified** — a recent article about an old matter
+                  is the failure mode that looks most like real news
+            - [ ] Citations in the right form (neutral citation for UK, reporter or docket for US)
+            - [ ] Case notes are UK or US only; anything else belongs in Situations
+            - [ ] `status` set to `published`
+            - [ ] Candidate comment block at the bottom of the file deleted
+
+            CI checks the mechanical rules. It cannot check whether a summary
+            of a holding is right — that is what this review is for.
