@@ -194,6 +194,16 @@ def render(issue: Issue, editorial: dict, out_dir: Path = OUTPUT_DIR) -> Path:
 def main(argv: list[str]) -> int:
     editorial = load_config("editorial")
     paths = [Path(a) for a in argv[1:]] or issue_paths()
+
+    # Clear PDFs for issues that no longer exist. Without this, deleting an
+    # issue leaves its PDF on the site with nothing linking to it.
+    if not argv[1:] and OUTPUT_DIR.is_dir():
+        wanted = {pdf_name(load_issue(p), editorial) for p in paths}
+        for stale in OUTPUT_DIR.glob("*.pdf"):
+            if stale.name not in wanted:
+                stale.unlink()
+                print(f"  removed {stale.relative_to(REPO_ROOT)}")
+
     for path in paths:
         issue = load_issue(path)
         out = render(issue, editorial)
