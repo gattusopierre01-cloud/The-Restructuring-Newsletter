@@ -1,0 +1,218 @@
+# Issue 1 — the first issue built from real developments.
+#
+# Period runs 14–21 September rather than 14–20. The seven days to Sunday
+# produced no published UK or US restructuring judgment; the most significant
+# decision of the period, Trower J in Glencore v Prax Lindsey, was handed down
+# on the Monday. Carrying it rather than holding it a week is the call made
+# here. See the cadence note in the covering message.
+
+issue: 1
+slug: 2026-W38
+status: draft
+
+date_published: 2026-09-23
+period_start: 2026-09-14
+period_end: 2026-09-21
+
+headlines:
+  - airBaltic, 88% owned by the Latvian state, filed for Chapter 11 in New York
+    with €350m of new financing committed behind it.
+  - Arxada's English scheme of arrangement was sanctioned without opposition,
+    extending its term loans and notes by three years.
+  - A Belo Horizonte court ratified Andrade Gutierrez's out-of-court plan,
+    binding creditors for the second time in four years.
+
+# ---------------------------------------------------------------------------
+# Situation of the week
+# ---------------------------------------------------------------------------
+featured:
+  jurisdiction: LV
+  name: Air Baltic Corporation AS
+  kind: Chapter 11
+  stage: filed
+  venue: S.D.N.Y., filed 14 September 2026
+  debt: Assets and liabilities each stated at $1–10bn
+  parties: Latvian state 88.37%, Lufthansa Group c. 10%
+  body: >
+    Latvia's flag carrier filed for Chapter 11 in Manhattan on 14 September,
+    together with its training and cargo subsidiaries. The airline is not
+    American. It is 88% owned by the Latvian state, flies a fleet built around
+    the Airbus A220, and its operations sit squarely in the Baltics. It filed in
+    New York anyway.
+
+    The pressures are the familiar post-pandemic ones compounded by an engine
+    problem: Pratt & Whitney geared turbofan groundings, higher fuel costs, war
+    on the eastern border, and a €70m net loss in the first quarter of 2026. Its
+    2029 bonds tell the story — quoted in the mid-90s in January, low 20s by
+    August.
+
+    What makes the filing worth attention is the money that came with it. A €350m
+    superpriority term loan, arranged by Strategic Value Partners with Barclays
+    Bank Ireland, Hayfin and Oaktree alongside, priced at SOFR plus 800 with a 5%
+    upfront fee. The Latvian state authorised up to €30m of interim financing of
+    its own. The plan contemplates handing back around twenty surplus aircraft,
+    taking the fleet from 54 to the high thirties, and €45m of annual cost
+    savings, with completion targeted for June 2027.
+
+    The question the case raises is the one this newsletter exists for: why New
+    York? The answer is in this week's concepts.
+  source:
+    title: Case summary and docket detail — Bondoro
+    url: https://bondoro.com/air-baltic/
+
+# ---------------------------------------------------------------------------
+# Situations
+# ---------------------------------------------------------------------------
+situations:
+  - jurisdiction: CH
+    name: Arxada AG
+    kind: Scheme of arrangement (Part 26)
+    stage: completed
+    venue: High Court of England and Wales, sanctioned 15 September 2026
+    debt: €1.119bn and $1.362bn term loans, a €430m RCF, and senior notes
+    parties: Rajah J sanctioned; no creditor opposed
+    notable: >
+      A Swiss specialty chemicals group used an English scheme to push its
+      maturities out by three years, adding payment-in-kind margins while
+      keeping cash coupons, with a CHF 200m sponsor contribution alongside.
+      Turnout was 82% in the senior secured class and 96% among noteholders,
+      and every creditor who voted supported it. No judgment has been published.
+    source:
+      title: Arxada A&E scheme sanctioned by the English High Court — Debtwire
+      url: https://ionanalytics.com/insights/debtwire/arxada-ae-scheme-of-arrangement-sanctioned-by-english-high-court/
+
+  - jurisdiction: BR
+    name: Andrade Gutierrez Engenharia
+    kind: Recuperação extrajudicial
+    stage: completed
+    venue: Belo Horizonte, ratified 18 September 2026
+    debt: c. R$3.4bn (about $660m) at the main operating company
+    parties: Vert, a securitisation firm, holds c. 71% of claims
+    notable: >
+      Brazil's out-of-court recovery process lets a plan agreed with a majority
+      be ratified by the court and imposed on the rest. Creditors choose between
+      a 36% payout on schedule, full principal deferred to 2070, or a split of
+      the two. It is the group's second restructuring in four years.
+    source:
+      title: Andrade Gutierrez restructuring approved — The Rio Times
+      url: https://www.riotimesonline.com/andrade-gutierrez-restructuring-approved-2026/
+
+# ---------------------------------------------------------------------------
+# Case notes — UK and US only
+# ---------------------------------------------------------------------------
+cases:
+  - jurisdiction: UK
+    name: Glencore Energy UK Ltd v Prax Lindsey Oil Refinery Ltd (in liquidation)
+    citation: "[2026] EWHC 2394 (Ch)"
+    court: High Court, Insolvency and Companies List
+    judge: Trower J
+    date: 2026-09-21
+    bottom_line: >
+      The right to rescind a contract for fraud survives the counterparty's
+      liquidation. It binds the property transferred, so it is not swept into
+      the pari passu distribution. Crown Holdings is not followed.
+    facts: >
+      Prax Lindsey ran a major UK refinery and went into compulsory liquidation
+      in June 2025 after a fraud by its sole director, involving fictitious
+      invoices exceeding £334m. Glencore sought permission to rescind five crude
+      supply contracts worth over $230m, induced, it said, by misrepresentations
+      about the refinery's finances.
+    question: >
+      Does an equity to rescind for fraudulent misrepresentation survive a
+      company's liquidation, or is it extinguished by the statutory trust over
+      the company's assets?
+    holding: >
+      Leave to proceed granted. The equity is an inherent limitation on the title
+      the company acquired, not a personal claim against it: the property passed
+      subject to the equity and remained so. The statutory scheme in section 107
+      assumes assets come to the liquidator unencumbered, and here they did not.
+      The reasoning in Crown Holdings was rejected.
+    why_it_matters: >
+      A defrauded counterparty may recover the asset itself rather than prove as
+      an unsecured creditor for its value. For liquidators it means assets
+      acquired before the winding up cannot be assumed clean. Given it departs
+      from a High Court decision, an appeal would not be surprising.
+    background: >
+      When a contract is induced by fraud the innocent party may rescind, undoing
+      the transfer. That is an equity: not a debt owed, but a flaw in the other
+      side's title. On a winding up, section 107 of the Insolvency Act 1986
+      requires assets to be shared rateably among unsecured creditors — pari
+      passu. The question is whether an equity that predates the liquidation
+      sits outside that pool or falls into it.
+    source:
+      title: Approved judgment — Find Case Law
+      url: https://caselaw.nationalarchives.gov.uk/ewhc/ch/2026/2394
+
+# ---------------------------------------------------------------------------
+# Both sides of the table
+# ---------------------------------------------------------------------------
+concepts:
+  pairing: >
+    Eligibility opens the door to a New York courtroom. The superpriority loan
+    is what makes walking through it worth doing.
+  law:
+    term: Section 109(a) eligibility
+    body: >
+      A company does not need to be American to be a Chapter 11 debtor. Section
+      109(a) of the Bankruptcy Code requires only that it reside, or have a
+      domicile, a place of business, or property in the United States. Courts
+      have read "property" generously: a bank account, or a retainer paid to US
+      counsel, has been enough. That is why a Latvian airline, or a Swiss
+      chemicals group, can restructure in Manhattan. The attraction is not the
+      courtroom but the toolkit — the automatic stay reaching worldwide, the
+      ability to reject leases, and a financing market that will lend to a
+      company already in bankruptcy.
+    see_also: [Chapter 15, COMI, forum shopping, automatic stay]
+  finance:
+    term: Debtor-in-possession financing
+    body: >
+      New money lent to a company after it files, and the reason a bankrupt
+      borrower can still raise several hundred million. The lender is protected
+      by statute: a superpriority claim ranking ahead of existing unsecured
+      creditors, and usually a lien priming existing security. That priority,
+      not the borrower's condition, is what is being priced — which is how
+      airBaltic's €350m came at SOFR plus 800 with a 5% upfront fee, expensive
+      in absolute terms but secured against the front of the queue. DIP lenders
+      also tend to end up owning the reorganised company, so the loan is often
+      the first move in a bid for control.
+    see_also: [superpriority, priming lien, roll-up, exit financing]
+
+numbers:
+  - label: airBaltic 2029 bonds
+    value: Low 20s
+    change: From the mid-90s in January 2026
+    period: Pre-filing
+    source:
+      title: Case summary — Bondoro
+      url: https://bondoro.com/air-baltic/
+  - label: airBaltic superpriority DIP
+    value: SOFR + 800
+    change: 5% upfront and backstop fees
+    period: 12 months
+    source:
+      title: Case summary — Bondoro
+      url: https://bondoro.com/air-baltic/
+  - label: England and Wales — registered company insolvencies
+    value: See latest release
+    change: null
+    period: Monthly
+    source:
+      title: Insolvency Service monthly statistics
+      url: https://www.gov.uk/government/collections/monthly-insolvency-statistics
+
+watchlist:
+  - date: null
+    jurisdiction: US
+    text: >
+      airBaltic's first-day relief and final DIP approval in the Southern
+      District of New York, and how the 2029 bonds are treated.
+  - date: null
+    jurisdiction: UK
+    text: >
+      Whether Glencore v Prax Lindsey is appealed, given that it declines to
+      follow Crown Holdings.
+  - date: null
+    jurisdiction: BR
+    text: >
+      Whether minority creditors challenge the Andrade Gutierrez ratification,
+      where one holder controlled 71% of claims.

@@ -77,8 +77,12 @@ class Featured:
     venue: str = ""
     debt: str = ""
     parties: str = ""
-    body: str = ""
+    paragraphs: list[str] = field(default_factory=list)
     source: Source | None = None
+
+    @property
+    def body(self) -> str:
+        return " ".join(self.paragraphs)
 
 
 @dataclass
@@ -214,6 +218,19 @@ def _clean(value: Any) -> str:
     return " ".join(str(value).split())
 
 
+def _clean_paragraphs(value: Any) -> list[str]:
+    """Same, but keeping paragraph breaks.
+
+    In a YAML folded scalar (`>`) a single newline becomes a space and a blank
+    line becomes a newline, so the blank lines an author writes survive as
+    "\n". The situation of the week is long enough to need paragraphs; every
+    other field is a single one.
+    """
+    if value is None:
+        return []
+    return [" ".join(part.split()) for part in str(value).split("\n") if part.strip()]
+
+
 def _as_date(value: Any) -> dt.date | None:
     if value in (None, ""):
         return None
@@ -255,7 +272,7 @@ def parse_issue(raw: dict[str, Any]) -> Issue:
             venue=_clean(featured_raw.get("venue")),
             debt=_clean(featured_raw.get("debt")),
             parties=_clean(featured_raw.get("parties")),
-            body=_clean(featured_raw.get("body")),
+            paragraphs=_clean_paragraphs(featured_raw.get("body")),
             source=Source.parse(featured_raw.get("source")),
         )
 

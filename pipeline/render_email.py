@@ -70,8 +70,9 @@ def body_markdown(issue: Issue, editorial: dict) -> str:
         if meta:
             out.append("*" + " · ".join(meta) + "*")
             out.append("")
-        out.append(f.body)
-        out.append("")
+        for para in f.paragraphs:
+            out.append(para)
+            out.append("")
         if f.source:
             out.append(f"[{f.source.title}]({f.source.url})")
             out.append("")

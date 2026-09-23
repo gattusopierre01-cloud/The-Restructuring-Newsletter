@@ -73,8 +73,9 @@ def issue_markdown(issue: Issue, editorial: dict, pdf_href: str) -> str:
         meta = [b for b in (f.kind, f.venue, f.debt, f.parties) if b]
         out.append("*" + " · ".join(meta) + "*")
         out.append("")
-        out.append(f.body)
-        out.append("")
+        for para in f.paragraphs:
+            out.append(para)
+            out.append("")
         if f.source:
             out.append(f"→ {_source_link(f.source)}")
             out.append("")

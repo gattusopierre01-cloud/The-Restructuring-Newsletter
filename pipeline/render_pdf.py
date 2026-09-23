@@ -72,7 +72,7 @@ def issue_to_dict(issue: Issue, editorial: dict) -> dict:
                 "name": issue.featured.name,
                 "kind": issue.featured.kind,
                 "meta_line": _situation_meta(issue.featured),
-                "body": issue.featured.body,
+                "paragraphs": issue.featured.paragraphs,
                 "source": _source(issue.featured.source),
             }
         ),

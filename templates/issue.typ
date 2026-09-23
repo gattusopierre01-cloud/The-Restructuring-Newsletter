@@ -166,8 +166,11 @@
       #meta(d.featured.meta_line)
     ]
     #v(0.5em)
-    #text(size: 10.2pt)[#d.featured.body]
-    #v(0.35em)
+    #for para in d.featured.paragraphs [
+      #par(justify: true)[#text(size: 10.2pt)[#para]]
+      #v(0.3em)
+    ]
+    #v(0.05em)
     #source-line(d.featured.source)
   ]
 }
