@@ -327,6 +327,12 @@ def main() -> int:
         print("no issues found in issues/")
         return 1
 
+    # Clear generated issue pages first. Renaming or removing an issue would
+    # otherwise leave its page behind, pointing at a PDF that no longer exists,
+    # which fails the strict build.
+    if ISSUE_PAGES.is_dir():
+        for stale in ISSUE_PAGES.glob("*.md"):
+            stale.unlink()
     ISSUE_PAGES.mkdir(parents=True, exist_ok=True)
     written: list[Path] = copy_assets()
 

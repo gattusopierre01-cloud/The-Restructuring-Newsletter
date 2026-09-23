@@ -111,6 +111,10 @@ mkdocs serve                                   # preview at localhost:8000
 python -m pipeline.render_email issues/2026-W39.yaml   # print the email, don't send
 
 python -m pipeline.collect                     # see what this week's sources have
+python -m pipeline.collect --check-feeds       # which feeds still answer
+python -m pipeline.collect --days 14 --market  # candidates plus the market strip
+python -m pipeline.sources.fred --yaml         # a numbers: block ready to paste
+python -m pipeline.sources.courtlistener --docket "Air Baltic"
 python -m pipeline.new_issue                   # start next week's file
 ```
 
@@ -129,10 +133,14 @@ Four things, in this order. Only the first is needed to see the site.
 repository secret named `BUTTONDOWN_API_KEY` (Settings → Secrets and variables
 → Actions).
 
-**3. CourtListener**, for US opinions. A free API token, added as
-`COURTLISTENER_TOKEN`. Not needed until the US collector is switched on.
+**3. CourtListener**, for US opinions and dockets. A free token, added as
+`COURTLISTENER_TOKEN`. It works without one at a lower rate limit.
 
-**4. Anthropic**, for the drafting step in phase 4. `ANTHROPIC_API_KEY`.
+**4. FRED**, for the market backdrop. A free key from
+[fredaccount.stlouisfed.org/apikeys](https://fredaccount.stlouisfed.org/apikeys),
+added as `FRED_API_KEY`.
+
+**5. Anthropic**, for the drafting step in phase 4. `ANTHROPIC_API_KEY`.
 
 Secrets go in GitHub, never in the repository.
 
@@ -151,6 +159,29 @@ Secrets go in GitHub, never in the repository.
 - [ ] **Phase 5** — the weekly pull request, on a schedule
 - [ ] **Phase 6** — topic tags on case notes, a maturity-wall watchlist, a
       custom domain
+
+## Sources
+
+Three kinds, and the distinction is editorial rather than technical:
+
+| | What it is | May be cited for |
+| --- | --- | --- |
+| **Primary** | EDGAR, CourtListener, Find Case Law, gov.uk | What a court held, what was filed |
+| **Commentary** | JD Supra, firm blogs | Nothing. It finds developments; it is not authority |
+| **Market** | FRED | Numbers, with the series linked |
+
+**Nothing is scraped.** Debtwire, 9fin, Octus/Reorg, Law360 and Bloomberg are
+the best sources in this field and every one of them forbids automated
+collection. They are also paywalled, which rules them out anyway — a student
+cannot open them. What is here is public feeds and documented APIs.
+
+Feed URLs rot. `--check-feeds` reports which still answer. A dead feed is
+skipped rather than failing the run, but a silent zero and a quiet week look
+identical from the outside, so it is worth running.
+
+**Why the market strip is in a restructuring newsletter.** High-yield spreads
+lead filings by six to eighteen months. A reader who watches the spread
+understands why the situations section is getting longer before it does.
 
 ## The one thing that is not solved
 

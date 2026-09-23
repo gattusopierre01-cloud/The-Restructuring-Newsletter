@@ -72,7 +72,7 @@
 #let meta(t) = text(size: 8.6pt, fill: muted)[#t]
 
 // Label above its text, not run in: each part of the note is findable.
-#let field(label, body) = block(below: 0.55em, width: 100%)[
+#let field(label, body) = block(above: 1.0em, below: 0.25em, width: 100%)[
   #text(size: 7.2pt, weight: "bold", tracking: 0.16em, fill: accent)[#upper(label)]
   #v(0.14em)
   #par(justify: false)[#body]
@@ -206,7 +206,7 @@
     #field("Question", c.question)
     #field("Holding", c.holding)
     #field("Why it matters", c.why_it_matters)
-    #block(below: 0.7em, width: 100%)[
+    #block(above: 1.0em, below: 0.6em, width: 100%)[
       #text(size: 7.2pt, weight: "bold", tracking: 0.16em, fill: muted)[BACKGROUND]
       #v(0.22em)
       #par(justify: false)[#text(size: 9.8pt, fill: rgb("#45413d"))[#c.background]]
@@ -219,7 +219,9 @@
 
 #if d.concepts != none {
   section-head(d.labels.concepts, note: "one from each seat")
-  block(width: 100%, breakable: false)[
+  // Breakable: an atomic two-column block that will not fit leaves a hole on
+  // the page it could not start on.
+  block(width: 100%, breakable: true)[
     #grid(
       columns: (1fr, 1fr), gutter: 18pt,
       ..d.concepts.sides.map(side => [

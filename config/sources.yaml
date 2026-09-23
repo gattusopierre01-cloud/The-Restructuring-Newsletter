@@ -1,11 +1,24 @@
-# Where the weekly draft looks. Add or remove entries here; the collectors in
-# pipeline/sources/ read this file rather than hard-coding endpoints.
+# Where the weekly draft looks.
 #
-# enabled: false means "wired up but not switched on yet".
+# Three kinds of source, and the difference matters editorially:
+#
+#   primary     What a case note or a filing may be cited to. Courts,
+#               regulators, official registers.
+#   commentary  Used to FIND developments and to sanity check a reading of
+#               one. Never the cited authority for what a court held.
+#   market      Numbers. The backdrop that explains why any of this is
+#               happening — spreads, yields, rates, insolvency counts.
+#
+# Nothing here is scraped. Everything is a public feed or a documented API.
+# Debtwire, 9fin, Octus/Reorg, Law360 and Bloomberg are the best sources in
+# this field and all of them forbid automated collection; they are also
+# paywalled, which rules them out anyway (config/editorial.yaml → sourcing).
+#
+# `enabled: false` means wired up but switched off. Feed URLs move and die —
+# run `python -m pipeline.collect --check-feeds` to see which are alive before
+# trusting any of them.
 
 primary:
-  # Primary sources: these are what a case note or a filing may be cited to.
-
   - id: edgar_bankruptcy_8k
     enabled: true
     kind: api
@@ -13,58 +26,75 @@ primary:
     name: SEC EDGAR — Item 1.03 bankruptcy 8-Ks
     description: >
       US public companies must report a bankruptcy or receivership on Form 8-K
-      under Item 1.03. This is the cleanest free signal that a listed issuer has
-      filed. Full-text search covers roughly the last five years.
-    endpoint: https://efts.sec.gov/LATEST/search-index?q=%22Item%201.03%22&forms=8-K
+      under Item 1.03. The cleanest free signal that a listed issuer has filed.
+    endpoint: https://efts.sec.gov/LATEST/search-index
     docs: https://www.sec.gov/edgar/sec-api-documentation
     auth: none
-    notes: SEC requires a descriptive User-Agent with a contact address.
 
   - id: courtlistener_opinions
     enabled: true
     kind: api
     jurisdiction: US
-    name: CourtListener — opinions and dockets
+    name: CourtListener — opinions
     description: >
-      Free Law Project's API. Used for bankruptcy court and appellate opinions,
-      and for docket entries on the matters on the watchlist.
-    endpoint: https://www.courtlistener.com/api/rest/v4/
+      Free Law Project. Bankruptcy court and appellate opinions. This is what
+      a US case note is cited to.
+    endpoint: https://www.courtlistener.com/api/rest/v4/search/
     docs: https://www.courtlistener.com/help/api/rest/
     auth: token          # COURTLISTENER_TOKEN
-    courts: [scotus, ca1, ca2, ca3, ca5, ca9, deb, nysb, txsb, njb]
+    courts: [scotus, ca1, ca2, ca3, ca4, ca5, ca7, ca9, ca11, deb, nysb, txsb, njb, ilnb]
+
+  - id: courtlistener_dockets
+    enabled: true
+    kind: api
+    jurisdiction: US
+    name: CourtListener — dockets (RECAP)
+    description: >
+      Docket entries for named matters. Writing issue 1 we could not link the
+      airBaltic filing itself and had to cite commentary instead; this is the
+      fix. Coverage depends on what RECAP has, so it is best used to follow a
+      matter already known about rather than to discover new ones.
+    endpoint: https://www.courtlistener.com/api/rest/v4/dockets/
+    auth: token
 
   - id: find_case_law
     enabled: true
     kind: atom
     jurisdiction: UK
     name: The National Archives — Find Case Law
-    description: >
-      Official source for judgments of the senior courts of England and Wales.
-      Filtered to the Business and Property Courts, Insolvency and Companies
-      List, plus the Court of Appeal and Supreme Court.
+    description: Official source for judgments of the senior courts of England and Wales.
     endpoint: https://caselaw.nationalarchives.gov.uk/atom.xml
-    docs: https://caselaw.nationalarchives.gov.uk/
     auth: none
-    filters:
-      courts: [ewhc/ch, ewhc/comm, ewca/civ, uksc]
-      keywords:
-        - restructuring plan
-        - Part 26A
-        - scheme of arrangement
-        - administration
-        - liquidation
-        - wrongful trading
-        - cross-class cram down
+
+  - id: find_case_law_search
+    enabled: true
+    kind: html
+    jurisdiction: UK
+    name: Find Case Law — dated search
+    description: >
+      The Atom feed is a firehose of everything. This queries the search page
+      with a date window and the insolvency vocabulary, which is how issue 1's
+      case note was found.
+    endpoint: https://caselaw.nationalarchives.gov.uk/search
+    auth: none
 
   - id: insolvency_service_stats
     enabled: true
     kind: html
     jurisdiction: UK
     name: Insolvency Service — monthly insolvency statistics
-    description: Company and individual insolvency numbers for England and Wales.
     endpoint: https://www.gov.uk/government/collections/monthly-insolvency-statistics
     auth: none
     cadence: monthly
+
+  - id: gov_uk_insolvency_service
+    enabled: true
+    kind: atom
+    jurisdiction: UK
+    name: gov.uk — Insolvency Service announcements
+    description: Enforcement, disqualifications, consultations, policy.
+    endpoint: https://www.gov.uk/search/all.atom?organisations%5B%5D=insolvency-service
+    auth: none
 
   - id: the_gazette
     enabled: false
@@ -72,37 +102,129 @@ primary:
     jurisdiction: UK
     name: The Gazette — insolvency notices
     description: >
-      Statutory notices: administrators appointed, winding-up petitions,
-      creditors' meetings. High volume, so it needs a size or sector filter
-      before it is switched on.
+      Statutory notices: administrators appointed, winding-up petitions.
+      Very high volume — needs a size or sector filter before switching on.
     endpoint: https://www.thegazette.co.uk/all-notices/notice/data.feed
     auth: none
 
-signals:
-  # Used to FIND developments and to sanity check a reading. Never cited as the
-  # source for what a court held. See config/editorial.yaml -> sourcing.
+  - id: judiciary_uk
+    enabled: false
+    kind: rss
+    jurisdiction: UK
+    name: Judiciary of England and Wales — announcements
+    endpoint: https://www.judiciary.uk/feed/
+    auth: none
 
-  - id: firm_alerts
+commentary:
+  # Found a development? Good. Cited for what a court held? Never.
+  # See config/editorial.yaml → sourcing.commentary_use.
+  - id: jdsupra_bankruptcy
     enabled: true
     kind: rss
-    name: Restructuring commentary
-    description: >
-      Law-firm and adviser commentary, used only to spot decisions worth
-      reading and to check that a summary has not misread one.
+    name: JD Supra — bankruptcy and Chapter 11
+    description: Aggregates law-firm client alerts across many firms. Broad, noisy, free.
     feeds:
       - https://www.jdsupra.com/rss/topic-Chapter-11-2013.rss
-      - https://www.lexology.com/rss/library?navigatorid=29a1e8c1-27e2-4fdd-b3dd-a8b8b0a9d4b9
+      - https://www.jdsupra.com/rss/topic-Bankruptcy-Code-1580.rss
+      - https://www.jdsupra.com/rss/topic-Debt-Restructuring-2461.rss
+
+  - id: firm_blogs
+    enabled: true
+    kind: rss
+    name: Restructuring blogs
+    description: >
+      Firm and chambers blogs that publish full feeds. Candidates — run
+      --check-feeds before relying on any of them, as these move.
+    feeds:
+      - https://restructuring.weil.com/feed/
+      - https://southsquare.com/feed/
+      - https://www.klgates.com/rss/insights
+      - https://businesslawtoday.org/feed/
+      - https://www.abi.org/rss/headlines
+
+  - id: trade_press
+    enabled: false
+    kind: rss
+    name: Trade press (free tiers)
+    description: >
+      General business press covering large restructurings. Off by default —
+      high volume, low signal for a specialist weekly, and prone to reporting
+      an old matter as though it were new (see the date check in select.py).
+    feeds:
+      - https://feeds.reuters.com/reuters/businessNews
+
+market:
+  # The backdrop. Spreads tell you what the next twelve months of filings look
+  # like long before the filings arrive.
+  - id: fred
+    enabled: true
+    kind: api
+    name: FRED — Federal Reserve Bank of St Louis
+    description: >
+      Free API, free key, daily data. The ICE BofA high-yield indices are the
+      single best available read on distress conditions.
+    endpoint: https://api.stlouisfed.org/fred/series/observations
+    docs: https://fred.stlouisfed.org/docs/api/fred/series_observations.html
+    auth: key            # FRED_API_KEY
+    series:
+      - id: BAMLH0A0HYM2
+        label: US high yield — spread over treasuries
+        unit: bp
+        scale: 100       # FRED gives percent; basis points read better
+      - id: BAMLH0A0HYM2EY
+        label: US high yield — effective yield
+        unit: "%"
+      - id: BAMLH0A3HYC
+        label: US CCC and lower — spread
+        unit: bp
+        scale: 100
+      - id: BAMLHE00EHYIOAS
+        label: Euro high yield — spread
+        unit: bp
+        scale: 100
+      - id: DGS10
+        label: US 10-year treasury
+        unit: "%"
+      - id: SOFR
+        label: SOFR
+        unit: "%"
+      - id: EFFR
+        label: Fed funds (effective)
+        unit: "%"
+    # Which of the above go into the Numbers section of an issue. The rest are
+    # collected for context and for the drafter to reason about.
+    headline: [BAMLH0A0HYM2, BAMLH0A3HYC, BAMLHE00EHYIOAS, SOFR]
+
+  - id: boe_database
+    enabled: false
+    kind: api
+    name: Bank of England — interactive database
+    description: >
+      UK rates: Bank Rate and SONIA. The CSV interface needs date parameters
+      in a particular shape; wired up but not yet written.
+    endpoint: https://www.bankofengland.co.uk/boeapps/database/_iadb-fromshowcolumns.asp
+    auth: none
+    series:
+      - id: IUDBEDR
+        label: Bank Rate
+        unit: "%"
+      - id: IUDSOIA
+        label: SONIA
+        unit: "%"
 
 scoring:
-  # How select.py ranks candidates when there are more than fit in an issue.
+  # How select.py ranks candidates when more turn up than fit in an issue.
   weights:
-    jurisdiction_in_scope: 3
     is_appellate_or_supreme: 5
+    has_primary_source: 5
     on_watched_theme: 4
     large_debt_quantum: 3
-    has_primary_source: 5
+    jurisdiction_in_scope: 3
     is_commentary_only: -4
     older_than_window: -6
+    # The near-miss from issue 1: a recent-looking article about a matter that
+    # was decided months ago. Penalise hard, and verify the date separately.
+    date_unverified: -8
   watched_themes:
     - cross-class cram-down and the horizontal comparator
     - treatment of out-of-the-money creditors
@@ -110,6 +232,7 @@ scoring:
     - uptier and drop-down liability management exercises
     - creditor duties and the twilight zone
     - Chapter 15 and cross-border recognition
+    - forum choice and section 109(a) eligibility
     - pension and landlord claims in restructuring plans
     - directors' duties and wrongful trading
   lookback_days: 10       # slight overlap so nothing falls between issues
