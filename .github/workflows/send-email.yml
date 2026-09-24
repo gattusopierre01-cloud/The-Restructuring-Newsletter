@@ -3,6 +3,10 @@ name: Send email
 # Deliberately manual. Sending is the one step that cannot be undone, so it
 # asks a human to pick the issue and press the button.
 #
+# Run it in "draft" mode first: that puts the issue into Buttondown where you
+# can read it in the real rendering, and sends nothing. "send" mode goes to
+# every subscriber and additionally requires the word "send" typed out.
+#
 # Once a few issues have gone out and you trust the pipeline, this can be
 # triggered from publish.yml instead — see README.md, "Turning on automatic
 # sending".
@@ -11,12 +15,21 @@ on:
   workflow_dispatch:
     inputs:
       issue:
-        description: "Issue slug, e.g. 2026-W40"
+        description: "Issue slug, e.g. 2026-W38"
         required: true
         type: string
-      confirm:
-        description: 'Type "send" to confirm — this goes to every subscriber'
+      mode:
+        description: "draft = park it in Buttondown · send = deliver it"
         required: true
+        default: draft
+        type: choice
+        options:
+          - draft
+          - send
+      confirm:
+        description: 'For send only: type "send" to confirm'
+        required: false
+        default: ""
         type: string
 
 permissions:
@@ -27,9 +40,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check the confirmation
-        if: ${{ inputs.confirm != 'send' }}
+        if: ${{ inputs.mode == 'send' && inputs.confirm != 'send' }}
         run: |
-          echo "::error::Confirmation was '${{ inputs.confirm }}', expected 'send'."
+          echo "::error::Mode is 'send' but the confirmation box said '${{ inputs.confirm }}'. Type send to confirm, or choose draft mode."
           exit 1
 
       - uses: actions/checkout@v4
@@ -41,13 +54,32 @@ jobs:
 
       - run: pip install -r requirements.txt
 
+      - name: Check the API key is present
+        # Catch a missing or misnamed secret here, where the message is plain,
+        # rather than three steps later inside an HTTP error.
+        env:
+          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+        run: |
+          if [ -z "$BUTTONDOWN_API_KEY" ]; then
+            echo "::error::BUTTONDOWN_API_KEY is empty. Add it under Settings → Secrets and variables → Actions → Repository secrets (not Codespaces), spelled exactly BUTTONDOWN_API_KEY."
+            exit 1
+          fi
+          echo "Key found, ${#BUTTONDOWN_API_KEY} characters."
+
       - name: Check the issue against the editorial rules
         run: python -m pipeline.validate "issues/${{ inputs.issue }}.yaml"
 
       - name: Preview what will be sent
         run: python -m pipeline.render_email "issues/${{ inputs.issue }}.yaml"
 
-      - name: Send
+      - name: Save it to Buttondown as a draft
+        if: ${{ inputs.mode == 'draft' }}
+        env:
+          BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
+        run: python -m pipeline.render_email "issues/${{ inputs.issue }}.yaml" --draft
+
+      - name: Send to subscribers
+        if: ${{ inputs.mode == 'send' }}
         env:
           BUTTONDOWN_API_KEY: ${{ secrets.BUTTONDOWN_API_KEY }}
         run: python -m pipeline.render_email "issues/${{ inputs.issue }}.yaml" --send
