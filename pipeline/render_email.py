@@ -24,7 +24,8 @@ from pathlib import Path
 from .model import Issue, load_config, load_issue
 from .render_pdf import pdf_name
 
-API = "https://api.buttondown.email/v1/emails"
+# Base URL is api.buttondown.com — the old buttondown.email domain is dead.
+API = "https://api.buttondown.com/v1/emails"
 
 
 def subject(issue: Issue, editorial: dict) -> str:

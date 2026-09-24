@@ -253,17 +253,23 @@ def issue_markdown(issue: Issue, editorial: dict, pdf_href: str) -> str:
 
 
 def subscribe_form(editorial: dict) -> str:
-    """The signup form. Buttondown handles double opt-in and unsubscribes."""
+    """The signup form, in the shape Buttondown documents.
+
+    Two details that matter: the hidden `embed` field, without which the
+    subscriber is bounced to Buttondown's own page instead of being handled
+    inline; and no JavaScript submit, because Buttondown may need to show a
+    CAPTCHA and a fetch() call cannot.
+    """
     email = editorial.get("email", {})
     username = email.get("username", "")
     if email.get("provider") != "buttondown" or not username:
         return "*Email signup is not configured yet — see config/editorial.yaml.*"
     return (
-        '<form class="subscribe" action="https://buttondown.email/api/emails/embed-subscribe/'
-        f'{username}" method="post" target="popupwindow" '
-        f"onsubmit=\"window.open('https://buttondown.email/{username}', 'popupwindow')\">"
+        '<form class="subscribe embeddable-buttondown-form" method="post" '
+        f'action="https://buttondown.com/api/emails/embed-subscribe/{username}">'
         '<label for="bd-email">Email address</label>'
         '<input type="email" name="email" id="bd-email" placeholder="you@firm.com" required>'
+        '<input type="hidden" value="1" name="embed">'
         '<input type="submit" value="Subscribe">'
         "</form>"
     )
