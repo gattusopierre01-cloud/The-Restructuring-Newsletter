@@ -5,6 +5,7 @@ text alternative, which is what corporate mail filters want. That means this
 module only has to produce good Markdown and make one API call.
 
     python -m pipeline.render_email issues/2026-W39.yaml            # print it
+    python -m pipeline.render_email issues/2026-W39.yaml --draft     # park it in Buttondown
     python -m pipeline.render_email issues/2026-W39.yaml --send      # send it
 
 Sending needs BUTTONDOWN_API_KEY in the environment. A specimen or draft issue
@@ -26,6 +27,11 @@ from .render_pdf import pdf_name
 
 # Base URL is api.buttondown.com — the old buttondown.email domain is dead.
 API = "https://api.buttondown.com/v1/emails"
+
+# Pin the API version rather than inheriting whatever the account is set to.
+# Buttondown routes an unpinned request to the newest version, so leaving this
+# out means the newsletter's behaviour can change without the code changing.
+API_VERSION = "2026-04-01"
 
 
 def subject(issue: Issue, editorial: dict) -> str:
@@ -178,54 +184,102 @@ def _footer(editorial: dict, site: str) -> str:
     )
 
 
-def send(issue: Issue, editorial: dict) -> dict:
+def send(issue: Issue, editorial: dict, *, live: bool = True) -> dict:
+    """Push the issue to Buttondown.
+
+    live=True queues it to every subscriber. live=False parks it there as a
+    draft, which is the safe way to see the real thing in Buttondown's own
+    rendering before committing to a send.
+    """
     if issue.status != "published":
         raise SystemExit(
-            f"refusing to send: status is {issue.status!r}, not 'published'"
+            f"refusing to send: status is {issue.status!r}, not 'published'.\n"
+            f"Set 'status: published' in the issue file and re-run."
         )
-    api_key = os.environ.get("BUTTONDOWN_API_KEY")
+    api_key = os.environ.get("BUTTONDOWN_API_KEY", "").strip()
     if not api_key:
-        raise SystemExit("BUTTONDOWN_API_KEY is not set")
+        raise SystemExit(
+            "BUTTONDOWN_API_KEY is not set.\n"
+            "In GitHub: Settings → Secrets and variables → Actions → "
+            "Repository secrets. The name must match exactly, and it must be "
+            "an Actions secret, not a Codespaces one."
+        )
 
     payload = {
         "subject": subject(issue, editorial),
         "body": body_markdown(issue, editorial),
-        "status": "about_to_send",
+        "status": "about_to_send" if live else "draft",
     }
+    headers = {
+        "Authorization": f"Token {api_key}",
+        "Content-Type": "application/json",
+        "X-API-Version": API_VERSION,
+    }
+    if live:
+        # As of API version 2026-04-01 an email created straight into
+        # 'about_to_send' is rejected with 'sending_requires_confirmation'
+        # unless this header is present. It is Buttondown's guard against an
+        # integration blasting the list by accident; here the guard is the
+        # workflow's typed confirmation, one layer up.
+        headers["X-Buttondown-Live-Dangerously"] = "true"
+
     request = urllib.request.Request(
         API,
         data=json.dumps(payload).encode("utf-8"),
-        headers={
-            "Authorization": f"Token {api_key}",
-            "Content-Type": "application/json",
-        },
+        headers=headers,
         method="POST",
     )
     try:
         with urllib.request.urlopen(request, timeout=30) as response:
             return json.loads(response.read())
     except urllib.error.HTTPError as exc:
-        raise SystemExit(
-            f"Buttondown returned {exc.code}: {exc.read().decode('utf-8', 'replace')}"
-        ) from exc
+        detail = exc.read().decode("utf-8", "replace")
+        hint = ""
+        if exc.code in (401, 403):
+            hint = (
+                "\nThat is an authentication failure. The key was probably "
+                "regenerated after it was put into GitHub Secrets — copy the "
+                "current one from buttondown.com/settings/programming and "
+                "update the secret."
+            )
+        elif exc.code == 400 and "sending_requires_confirmation" in detail:
+            hint = (
+                "\nButtondown wants the live-send confirmation header. This "
+                "code sends it, so an account pinned to an older API version "
+                f"may be the cause — check that {API_VERSION} is what the "
+                "account expects."
+            )
+        raise SystemExit(f"Buttondown returned {exc.code}: {detail}{hint}") from exc
+    except urllib.error.URLError as exc:
+        raise SystemExit(f"could not reach Buttondown: {exc.reason}") from exc
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("issue", type=Path, help="path to an issue YAML file")
     parser.add_argument("--send", action="store_true", help="send it, rather than print it")
+    parser.add_argument(
+        "--draft",
+        action="store_true",
+        help="create it in Buttondown as a draft, without sending",
+    )
     args = parser.parse_args(argv)
 
     editorial = load_config("editorial")
     issue = load_issue(args.issue)
 
-    if not args.send:
+    if not (args.send or args.draft):
         print(f"Subject: {subject(issue, editorial)}\n")
         print(body_markdown(issue, editorial))
         return 0
 
-    result = send(issue, editorial)
-    print(f"sent: {result.get('id', '(no id returned)')}")
+    result = send(issue, editorial, live=args.send)
+    ident = result.get("id", "(no id returned)")
+    if args.send:
+        print(f"queued to subscribers: {ident}")
+    else:
+        print(f"saved as a draft in Buttondown: {ident}")
+        print("Open buttondown.com/emails to read it before sending.")
     return 0
 
 
