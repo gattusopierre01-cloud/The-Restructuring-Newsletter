@@ -6,8 +6,8 @@ publication:
   name: The Restructuring Brief
   strapline: Restructurings worldwide. Case law from the UK and US.
   cadence: weekly
-  # Prefix for downloaded PDFs, e.g. restructuring-brief-2026-W40.pdf
-  file_prefix: restructuring-brief
+  # Prefix for downloaded PDFs, e.g. the-restructuring-brief-issue-04.pdf
+  file_prefix: the-restructuring-brief
   # Change these two once a custom domain is set up.
   site_url: https://gattusopierre01-cloud.github.io/The-Restructuring-Newsletter/
   site_url_label: gattusopierre01-cloud.github.io/The-Restructuring-Newsletter
