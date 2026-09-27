@@ -161,10 +161,18 @@ def issue_to_dict(issue: Issue, editorial: dict) -> dict:
 
 
 def pdf_name(issue: Issue, editorial: dict) -> str:
-    """The download filename. Derived from the config so a rename of the
-    publication carries through to every link without a code change."""
+    """The download filename — the one part of the naming a reader ever sees,
+    so it reads as an issue rather than as a build artefact.
+
+    Numbered rather than slugged: nobody says "the 2026-W38 issue". Zero
+    padded so a downloads folder still sorts correctly past issue 9.
+
+    The slug stays the identifier everywhere else — the file, the URL, the
+    archive — because it sorts by date and the drafter derives it from the
+    calendar.
+    """
     prefix = editorial["publication"].get("file_prefix", "issue")
-    return f"{prefix}-{issue.slug}.pdf"
+    return f"{prefix}-issue-{issue.issue:02d}.pdf"
 
 
 def render(issue: Issue, editorial: dict, out_dir: Path = OUTPUT_DIR) -> Path:
