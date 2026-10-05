@@ -85,13 +85,23 @@
 // -- masthead ----------------------------------------------------------------
 
 #block(width: 100%)[
+  // The wordmark must never wrap, and the width it gets depends on how long the
+  // period label is. The budget, on a 172mm measure:
+  //
+  //   487.6pt text width
+  //   - 36.5pt crest      - 30pt gutters      - ~101pt a long period label
+  //   = ~320pt for the wordmark
+  //
+  // "THE RESTRUCTURING BRIEF" measures 344pt at 23pt and 299pt at 20pt, so 23pt
+  // only ever fitted a short label and wrapped the moment a period ran across
+  // two months. 20pt leaves about 20pt of headroom on the longest label likely.
   #grid(
     columns: (auto, 1fr, auto),
     column-gutter: 15pt,
     align: (left + horizon, left + horizon, right + bottom),
     image("/assets/crest.svg", height: 15mm),
     [
-      #text(size: 23pt, weight: "bold", tracking: 0.04em)[#upper(d.publication)]
+      #text(size: 20pt, weight: "bold", tracking: 0.04em)[#upper(d.publication)]
       #v(0.2em)
       #text(size: 9pt, fill: muted, style: "italic")[#d.strapline]
     ],
@@ -265,7 +275,7 @@
   // rather than being buried under the value.
   table(
     columns: (1fr, auto, auto), align: (left + horizon, right + horizon, right + horizon),
-    stroke: (x, y) => (bottom: 0.4pt + hairline), inset: (x: 2pt, y: 7pt),
+    stroke: (x, y) => (bottom: 0.4pt + hairline), inset: (x: 2pt, y: 5.5pt),
     table.header(
       text(size: 7.5pt, weight: "bold", tracking: 0.16em, fill: accent)[INDICATOR],
       text(size: 7.5pt, weight: "bold", tracking: 0.16em, fill: accent)[LATEST],
@@ -307,12 +317,131 @@
   ]
 }
 
-// The colophon is one unit. Splitting it stranded the subscribe line alone on
-// a page of its own.
-#block(width: 100%, breakable: false, above: 0.75em)[
+// The colophon closes the newsletter proper, so it sits before the optional
+// page rather than after it. The long view is a supplement with its own source
+// note; trailing the colophon behind it stranded four lines on a page of their
+// own whenever a feature ran.
+#block(width: 100%, breakable: false, above: 0.55em)[
   #line(length: 100%, stroke: 0.8pt + ink)
-  #v(0.4em)
-  #text(size: 8.4pt, fill: muted)[#d.disclaimer]
-  #v(0.4em)
+  #v(0.32em)
+  #text(size: 8.1pt, fill: muted)[#d.disclaimer]
+  #v(0.32em)
   #text(size: 8.6pt)[Archive and subscribe: #link(d.site_url)[#d.site_url_label]]
 ]
+
+// -- the long view -----------------------------------------------------------
+//
+// An optional fourth page, run only when the week gives it something. Nothing
+// above this line changes when it is absent, which is the whole point: pages
+// one to three are the newsletter, and this is the week it deserved more room.
+//
+// The chart draws itself from the numbers in the issue file. That is not a
+// stylistic preference. Every issue is generated from content written days
+// earlier, so anything positioned by hand would be wrong the following week.
+
+#if d.feature != none {
+  pagebreak()
+
+  section-head(d.labels.feature, note: "stepping back from the week")
+
+  block(width: 100%, below: 0.7em)[
+    #text(size: 17pt, weight: "bold")[#d.feature.title]
+  ]
+
+  // -- the three furniture pieces, each defined once and placed by index ------
+  //
+  // Three figures at most in the strip, so each gets a third of the measure. A
+  // move is two numbers and an arrow; printing only the latest throws the point
+  // away.
+  let stat-strip() = block(
+    width: 100%, breakable: false, above: 0.6em, below: 0.8em,
+    stroke: (top: 0.6pt + accent, bottom: 0.4pt + hairline),
+    inset: (y: 8pt),
+  )[
+    #grid(
+      columns: d.feature.stats.map(_ => 1fr),
+      column-gutter: 12pt,
+      ..d.feature.stats.map(s => [
+        #text(size: 7.2pt, weight: "bold", tracking: 0.14em, fill: accent)[#upper(s.key)]
+        #v(0.3em)
+        #text(size: 12pt, weight: "bold")[#s.value]
+        #if s.note != "" [
+          #v(0.18em)
+          #text(size: 7.8pt, fill: muted)[#s.note]
+        ]
+      ]),
+    )
+  ]
+
+  // Horizontal bars, one series, labels left and values right. No gridlines and
+  // no legend: with a single series the title names it, and a rule behind four
+  // bars is furniture rather than information. Each bar's share of the longest
+  // one is worked out in Python, so this only has to draw a rectangle.
+  let figure-block(c) = block(width: 100%, breakable: false, above: 0.6em, below: 0.8em)[
+    #text(size: 7.2pt, weight: "bold", tracking: 0.16em, fill: accent)[FIGURE]
+    #v(0.25em)
+    #text(size: 10.5pt, weight: "bold")[#c.title]
+    #if c.note != "" [
+      #v(0.15em)
+      #text(size: 8.2pt, fill: muted)[#c.note]
+    ]
+    #v(0.7em)
+    #grid(
+      columns: (auto, 1fr, auto),
+      column-gutter: 10pt,
+      row-gutter: 7pt,
+      align: (left + horizon, left + horizon, right + horizon),
+      ..c.bars.map(b => (
+        text(size: 9.2pt)[#b.label],
+        box(width: 100%)[
+          #box(width: b.fraction * 100%, height: 9pt,
+               radius: (right: 2pt), fill: accent)
+        ],
+        text(size: 9.6pt, weight: "bold")[#b.display],
+      )).flatten(),
+    )
+    #if c.source != none [
+      #v(0.65em)
+      #line(length: 100%, stroke: 0.4pt + hairline)
+      #v(0.35em)
+      #source-line(c.source)
+    ]
+  ]
+
+  let quote-block(q) = block(
+    width: 100%, inset: (left: 11pt), stroke: (left: 2pt + gold),
+    above: 0.9em, below: 0.9em,
+  )[
+    #text(size: 11.5pt, style: "italic", fill: rgb("#45413d"))[#q.text]
+    #if q.attribution != "" [
+      #v(0.35em)
+      #text(size: 8.4pt, fill: muted)[#q.attribution]
+    ]
+  ]
+
+  // Walk the paragraphs, dropping each piece in after the paragraph it names.
+  // Placement lives in the issue file rather than here, so a different week can
+  // put the chart somewhere else without anyone touching the template.
+  for (i, para) in d.feature.paragraphs.enumerate() {
+    let n = i + 1
+    par(justify: false)[
+      #text(size: if i == 0 { 10.8pt } else { 10.2pt })[#para]
+    ]
+    v(0.38em)
+    if d.feature.stats.len() > 0 and d.feature.stats_after == n { stat-strip() }
+    if d.feature.chart != none and d.feature.chart.after == n {
+      figure-block(d.feature.chart)
+    }
+    if d.feature.pull_quote != none and d.feature.pull_quote.after == n {
+      quote-block(d.feature.pull_quote)
+    }
+  }
+
+  if d.feature.sources != "" {
+    block(width: 100%, above: 0.7em)[
+      #line(length: 100%, stroke: 0.4pt + hairline)
+      #v(0.3em)
+      #text(size: 7.9pt, fill: muted)[→ #d.feature.sources]
+    ]
+  }
+}
