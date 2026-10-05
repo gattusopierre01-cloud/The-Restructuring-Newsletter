@@ -138,6 +138,76 @@ class WatchItem:
 
 
 @dataclass
+class Stat:
+    """One figure in the feature's stat strip. `value` carries its own
+    formatting, including any arrow, because the move is the point."""
+
+    key: str
+    value: str
+    note: str = ""
+
+
+@dataclass
+class ChartBar:
+    """`value` sets the length of the bar, `display` is what gets printed at the
+    end of it. Keeping them apart means a bar can read "$800bn" without the
+    renderer having to guess where a currency symbol or a suffix belongs."""
+
+    label: str
+    value: float
+    display: str = ""
+
+    def __post_init__(self) -> None:
+        if not self.display:
+            self.display = f"{self.value:g}"
+
+
+@dataclass
+class Chart:
+    """A single series of bars, drawn from these numbers by the template.
+
+    Deliberately the only chart shape available. The issue is generated every
+    week from content nobody has seen in advance, so a chart has to draw itself
+    from values in the file rather than be positioned by hand.
+    """
+
+    title: str
+    bars: list[ChartBar] = field(default_factory=list)
+    note: str = ""
+    source: Source | None = None
+    after: int = 0          # print it after this paragraph, 0 means at the top
+
+    @property
+    def maximum(self) -> float:
+        return max((b.value for b in self.bars), default=0.0)
+
+
+@dataclass
+class PullQuote:
+    text: str
+    attribution: str = ""
+    after: int = 0
+
+
+@dataclass
+class Feature:
+    """The long view: an optional fourth page, run when the week gives it
+    something worth the room. Absent from the file means absent from the issue,
+    and pages one to three are untouched either way."""
+
+    title: str
+    paragraphs: list[str] = field(default_factory=list)
+    stats: list[Stat] = field(default_factory=list)
+    stats_after: int = 0
+    chart: Chart | None = None
+    pull_quote: PullQuote | None = None
+    sources: str = ""
+
+    def words(self) -> int:
+        return sum(len(p.split()) for p in self.paragraphs)
+
+
+@dataclass
 class Issue:
     """One edition. `slug` is the ISO year-week, e.g. 2026-W39."""
 
@@ -152,6 +222,7 @@ class Issue:
     situations: list[Situation] = field(default_factory=list)
     cases: list[Case] = field(default_factory=list)
     concepts: Concepts | None = None
+    feature: Feature | None = None
     conditions: str = ""
     numbers: list[Number] = field(default_factory=list)
     watchlist: list[WatchItem] = field(default_factory=list)
@@ -244,6 +315,52 @@ def _as_date(value: Any) -> dt.date | None:
     return dt.date.fromisoformat(str(value))
 
 
+def _parse_feature(raw: Any) -> "Feature | None":
+    if not raw:
+        return None
+    chart_raw = raw.get("chart") or None
+    chart = None
+    if chart_raw:
+        chart = Chart(
+            title=_clean(chart_raw.get("title")),
+            note=_clean(chart_raw.get("note")),
+            after=int(chart_raw.get("after", 0)),
+            source=Source.parse(chart_raw.get("source")),
+            bars=[
+                ChartBar(
+                    label=_clean(b.get("label")),
+                    value=float(b.get("value", 0)),
+                    display=_clean(b.get("display")),
+                )
+                for b in chart_raw.get("bars") or []
+            ],
+        )
+    quote_raw = raw.get("pull_quote") or None
+    quote = None
+    if quote_raw:
+        quote = PullQuote(
+            text=_clean(quote_raw.get("text")),
+            attribution=_clean(quote_raw.get("attribution")),
+            after=int(quote_raw.get("after", 0)),
+        )
+    return Feature(
+        title=_clean(raw.get("title")),
+        paragraphs=_clean_paragraphs(raw.get("body")),
+        stats_after=int(raw.get("stats_after", 0)),
+        stats=[
+            Stat(
+                key=_clean(s.get("key")),
+                value=_clean(s.get("value")),
+                note=_clean(s.get("note")),
+            )
+            for s in raw.get("stats") or []
+        ],
+        chart=chart,
+        pull_quote=quote,
+        sources=_clean(raw.get("sources")),
+    )
+
+
 def _parse_concept(raw: Any) -> Concept | None:
     if not raw:
         return None
@@ -322,6 +439,7 @@ def parse_issue(raw: dict[str, Any]) -> Issue:
             for c in raw.get("cases") or []
         ],
         concepts=concepts,
+        feature=_parse_feature(raw.get("feature")),
         conditions=_clean(raw.get("conditions")),
         numbers=[
             Number(

@@ -73,6 +73,22 @@ def _words(text: str) -> int:
     return len(text.split())
 
 
+# A dash in prose is usually a sentence that was not finished properly. Ranges
+# between numbers and dates are the one place the character earns its keep, so
+# the pattern below only fires when a dash has whitespace or a letter beside it.
+PROSE_DASH = re.compile(r"(?:\s[-–—]\s|\w[—]\w|^[-–—]\s|\s[-–—]$)")
+
+
+def _check_dashes(rep: Report, where: str, text: str) -> None:
+    match = PROSE_DASH.search(text or "")
+    if match:
+        start = max(0, match.start() - 30)
+        rep.error(
+            f"{where}: dash in prose near {text[start:match.end() + 30].strip()!r}. "
+            f"Rebuild the sentence with a comma, colon, semicolon or full stop."
+        )
+
+
 def _check_count(rep: Report, rules: dict, label: str, items: list) -> None:
     lo, hi = rules.get("min_items"), rules.get("max_items")
     if lo is not None and len(items) < lo:
@@ -265,19 +281,92 @@ def validate_issue(issue: Issue, editorial: dict) -> Report:
                 f"limit {rules['max_words_per_item']}"
             )
 
+    # -- the long view, when the week earned one ---------------------------
+    if issue.feature is not None:
+        rules = sections["feature"]
+        f = issue.feature
+        where = "feature"
+        if not f.title:
+            rep.error(f"{where}: no title")
+        if not f.paragraphs:
+            rep.error(f"{where}: no body")
+        if f.words() > rules["max_words"]:
+            rep.error(
+                f"{where}: {f.words()} words, limit {rules['max_words']}. "
+                f"It has to fit one page alongside the furniture."
+            )
+        if len(f.stats) > rules["max_stats"]:
+            rep.error(
+                f"{where}: {len(f.stats)} stats, at most {rules['max_stats']} "
+                f"fit across the measure"
+            )
+        # An element pointing at a paragraph that does not exist silently
+        # vanishes from the page, which is the worst way for this to fail.
+        last = len(f.paragraphs)
+        for label, after in (
+            ("stats_after", f.stats_after if f.stats else None),
+            ("chart.after", f.chart.after if f.chart else None),
+            ("pull_quote.after", f.pull_quote.after if f.pull_quote else None),
+        ):
+            if after is not None and not (1 <= after <= last):
+                rep.error(
+                    f"{where}: {label} is {after}, but the body has {last} "
+                    f"paragraphs, so the block would not be printed"
+                )
+        if f.chart is not None:
+            if len(f.chart.bars) > rules["max_bars"]:
+                rep.error(
+                    f"{where} chart: {len(f.chart.bars)} bars, at most "
+                    f"{rules['max_bars']}"
+                )
+            if not f.chart.bars:
+                rep.error(f"{where} chart: no bars")
+            if any(b.value < 0 for b in f.chart.bars):
+                rep.error(f"{where} chart: a negative value cannot be drawn as a bar")
+            _check_source(rep, f"{where} chart", f.chart.source, True)
+
     # -- tone and length ---------------------------------------------------
-    haystack = " ".join(
-        [
-            *issue.headlines,
-            *(s.notable for s in issue.situations),
-            issue.featured.body if issue.featured else "",
-            *(c.why_it_matters for c in issue.cases),
-            *(c.bottom_line for c in issue.cases),
-        ]
-    ).lower()
+    prose: list[tuple[str, str]] = [
+        *((f"headline {i}", h) for i, h in enumerate(issue.headlines, 1)),
+        *((f"situation {s.name!r}", s.notable) for s in issue.situations),
+        *((f"case {c.name[:40]!r} bottom line", c.bottom_line) for c in issue.cases),
+        *((f"case {c.name[:40]!r} facts", c.facts) for c in issue.cases),
+        *((f"case {c.name[:40]!r} question", c.question) for c in issue.cases),
+        *((f"case {c.name[:40]!r} holding", c.holding) for c in issue.cases),
+        *((f"case {c.name[:40]!r} why it matters", c.why_it_matters) for c in issue.cases),
+        *((f"case {c.name[:40]!r} background", c.background) for c in issue.cases),
+        *((f"watchlist {w.text[:30]!r}", w.text) for w in issue.watchlist),
+        ("conditions", issue.conditions),
+    ]
+    if issue.featured:
+        prose.extend(
+            (f"featured paragraph {i}", p)
+            for i, p in enumerate(issue.featured.paragraphs, 1)
+        )
+    if issue.concepts:
+        prose.extend(
+            (f"concept {side.lower()}", concept.body)
+            for side, concept in issue.concepts.pair()
+        )
+        prose.append(("concepts pairing", issue.concepts.pairing))
+    if issue.feature:
+        prose.extend(
+            (f"feature paragraph {i}", p)
+            for i, p in enumerate(issue.feature.paragraphs, 1)
+        )
+        if issue.feature.pull_quote:
+            # A quotation is reproduced, not written, so a dash inside one is
+            # the source's and stays. Only the attribution is ours.
+            prose.append(("feature pull quote attribution",
+                          issue.feature.pull_quote.attribution))
+
+    for where, text in prose:
+        _check_dashes(rep, where, text)
+
+    haystack = " ".join(text for _, text in prose).lower()
     for word in BANNED_ADJECTIVES:
         if word in haystack:
-            rep.warn(f"tone: {word!r} appears — let the facts carry the weight")
+            rep.warn(f"tone: {word!r} appears, let the facts carry the weight")
 
     lo, hi = editorial["publication"]["target_read_minutes"]
     minutes = issue.read_minutes()

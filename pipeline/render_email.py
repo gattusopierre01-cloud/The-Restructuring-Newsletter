@@ -141,6 +141,46 @@ def body_markdown(issue: Issue, editorial: dict) -> str:
             out.append(f"> {issue.concepts.pairing}")
             out.append("")
 
+    # The long view. Mail clients mangle anything clever, so the chart becomes a
+    # plain list of label and value: the ranking is the point and it survives.
+    if issue.feature:
+        f = issue.feature
+        out.append(f"## {editorial['sections']['feature']['label']}")
+        out.append("")
+        out.append(f"### {f.title}")
+        out.append("")
+        for i, para in enumerate(f.paragraphs, 1):
+            out.append(para)
+            out.append("")
+            if f.stats and f.stats_after == i:
+                for s in f.stats:
+                    line = f"- **{s.key}** — {s.value}"
+                    if s.note:
+                        line += f" ({s.note})"
+                    out.append(line)
+                out.append("")
+            if f.chart and f.chart.after == i:
+                out.append(f"**{f.chart.title}**")
+                out.append("")
+                if f.chart.note:
+                    out.append(f"*{f.chart.note}*")
+                    out.append("")
+                for b in f.chart.bars:
+                    out.append(f"- {b.label} — **{b.display}**")
+                out.append("")
+                if f.chart.source:
+                    out.append(f"[{f.chart.source.title}]({f.chart.source.url})")
+                    out.append("")
+            if f.pull_quote and f.pull_quote.after == i:
+                out.append(f"> {f.pull_quote.text}")
+                if f.pull_quote.attribution:
+                    out.append(">")
+                    out.append(f"> *{f.pull_quote.attribution}*")
+                out.append("")
+        if f.sources:
+            out.append(f"*{f.sources}*")
+            out.append("")
+
     if issue.conditions or issue.numbers:
         out.append("## Conditions")
         out.append("")

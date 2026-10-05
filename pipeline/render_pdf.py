@@ -49,7 +49,7 @@ def issue_to_dict(issue: Issue, editorial: dict) -> dict:
         "labels": {
             key: editorial["sections"][key]["label"]
             for key in ("headlines", "featured", "situations", "cases",
-                        "concepts", "numbers", "watchlist")
+                        "concepts", "numbers", "watchlist", "feature")
         },
         "strapline": pub["strapline"],
         "site_url": pub["site_url"],
@@ -136,6 +136,56 @@ def issue_to_dict(issue: Issue, editorial: dict) -> dict:
                     }
                     for side, concept in issue.concepts.pair()
                 ],
+            }
+        ),
+        # The long view. None when the week did not earn a fourth page, which
+        # the template reads as "print three pages and stop".
+        "feature": (
+            None
+            if issue.feature is None
+            else {
+                "title": issue.feature.title,
+                "paragraphs": issue.feature.paragraphs,
+                "stats_after": issue.feature.stats_after,
+                "stats": [
+                    {"key": s.key, "value": s.value, "note": s.note}
+                    for s in issue.feature.stats
+                ],
+                "chart": (
+                    None
+                    if issue.feature.chart is None
+                    else {
+                        "title": issue.feature.chart.title,
+                        "note": issue.feature.chart.note,
+                        "after": issue.feature.chart.after,
+                        "maximum": issue.feature.chart.maximum,
+                        "source": _source(issue.feature.chart.source),
+                        "bars": [
+                            {
+                                "label": b.label,
+                                # Share of the longest bar, worked out here so
+                                # the template only has to draw a rectangle.
+                                "fraction": (
+                                    b.value / issue.feature.chart.maximum
+                                    if issue.feature.chart.maximum
+                                    else 0.0
+                                ),
+                                "display": b.display,
+                            }
+                            for b in issue.feature.chart.bars
+                        ],
+                    }
+                ),
+                "pull_quote": (
+                    None
+                    if issue.feature.pull_quote is None
+                    else {
+                        "text": issue.feature.pull_quote.text,
+                        "attribution": issue.feature.pull_quote.attribution,
+                        "after": issue.feature.pull_quote.after,
+                    }
+                ),
+                "sources": issue.feature.sources,
             }
         ),
         "conditions": issue.conditions,

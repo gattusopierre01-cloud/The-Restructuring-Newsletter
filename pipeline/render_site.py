@@ -206,6 +206,98 @@ def issue_markdown(issue: Issue, editorial: dict, pdf_href: str) -> str:
             out.append(f'<p class="rb-pairing">{issue.concepts.pairing}</p>')
             out.append("")
 
+    # -- the long view ------------------------------------------------------
+    # The bars are divs with a percentage width rather than an image, so the
+    # chart reflows on a phone and stays readable at any zoom.
+    if issue.feature:
+        f = issue.feature
+        out.append(f"## {sections['feature']['label']}")
+        out.append("")
+        out.append(f'<div class="rb-feature" markdown>')
+        out.append("")
+        out.append(f"### {f.title}")
+        out.append("")
+
+        def _stats_block() -> None:
+            if not f.stats:
+                return
+            out.append('<div class="rb-stats" markdown>')
+            out.append("")
+            for s in f.stats:
+                # One line, and no `markdown` attribute: given a block to
+                # process, Markdown wraps the spans in a single paragraph and
+                # the three parts run together on one line.
+                note = (
+                    f'<span class="rb-stat-note">{s.note}</span>' if s.note else ""
+                )
+                out.append(
+                    f'<div class="rb-stat">'
+                    f'<span class="rb-stat-key">{s.key}</span>'
+                    f'<span class="rb-stat-value">{s.value}</span>'
+                    f"{note}</div>"
+                )
+            out.append("")
+            out.append("</div>")
+            out.append("")
+
+        def _chart_block() -> None:
+            c = f.chart
+            if c is None:
+                return
+            out.append('<div class="rb-figure" markdown>')
+            out.append("")
+            out.append(f'<p class="rb-fig-title">{c.title}</p>')
+            if c.note:
+                out.append(f'<p class="rb-fig-note">{c.note}</p>')
+            out.append('<div class="rb-bars">')
+            for b in c.bars:
+                pct = (b.value / c.maximum * 100) if c.maximum else 0
+                out.append(
+                    f'<div class="rb-bar-row">'
+                    f'<span class="rb-bar-label">{b.label}</span>'
+                    f'<span class="rb-bar-track">'
+                    f'<span class="rb-bar-fill" style="width:{pct:.1f}%"></span>'
+                    f"</span>"
+                    f'<span class="rb-bar-value">{b.display}</span>'
+                    f"</div>"
+                )
+            out.append("</div>")
+            if c.source:
+                out.append(f'<p class="rb-fig-src">{_source_html(c.source)}</p>')
+            out.append("")
+            out.append("</div>")
+            out.append("")
+
+        def _quote_block() -> None:
+            q = f.pull_quote
+            if q is None:
+                return
+            out.append('<blockquote class="rb-pull" markdown>')
+            out.append("")
+            out.append(q.text)
+            if q.attribution:
+                out.append("")
+                out.append(f'<span class="rb-pull-attr">{q.attribution}</span>')
+            out.append("")
+            out.append("</blockquote>")
+            out.append("")
+
+        for i, para in enumerate(f.paragraphs, 1):
+            out.append(para)
+            out.append("")
+            if f.stats and f.stats_after == i:
+                _stats_block()
+            if f.chart and f.chart.after == i:
+                _chart_block()
+            if f.pull_quote and f.pull_quote.after == i:
+                _quote_block()
+
+        if f.sources:
+            out.append(f'<p class="rb-feature-src">{f.sources}</p>')
+            out.append("")
+        out.append("</div>")
+        out.append("")
+
     # -- conditions ---------------------------------------------------------
     if issue.conditions or issue.numbers:
         out.append(f"## {sections['conditions']['label']}")
