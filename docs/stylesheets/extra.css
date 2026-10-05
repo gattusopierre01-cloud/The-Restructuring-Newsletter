@@ -522,3 +522,68 @@ form.subscribe input[type="submit"]:hover {
 .md-typeset .rb-archive-links {
   margin-top: 0.6rem;
 }
+
+/* ---------------------------------------------------------------------------
+   The long view: the optional fourth page. Bars are divs with a percentage
+   width rather than an image, so the chart reflows on a phone and stays sharp
+   at any zoom.
+   --------------------------------------------------------------------------- */
+
+.rb-feature { margin: 1.4rem 0 0; }
+.rb-feature h3 { font-size: 1.45rem; margin: .2rem 0 .7rem; }
+
+.rb-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 1.1rem;
+  border-top: 1.5px solid var(--rb-accent);
+  border-bottom: 1px solid var(--rb-hairline);
+  padding: .65rem 0; margin: 1rem 0 1.2rem;
+}
+.rb-stat > span { display: block; }
+.rb-stat-key + .rb-stat-value { margin-top: .18rem; }
+.rb-stat-key {
+  font-size: .68rem; font-weight: 700; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--rb-accent);
+}
+.rb-stat-value { font-size: 1.12rem; font-weight: 700; line-height: 1.15; }
+.rb-stat-note { font-size: .74rem; color: var(--rb-muted); }
+
+.rb-figure { margin: 1.2rem 0; }
+.rb-fig-title { font-weight: 700; margin: 0 0 .15rem; }
+.rb-fig-note { font-size: .82rem; color: var(--rb-muted); margin: 0 0 .8rem; }
+.rb-bars { display: flex; flex-direction: column; gap: .45rem; }
+.rb-bar-row {
+  display: grid; grid-template-columns: minmax(8rem, 15rem) 1fr auto;
+  align-items: center; gap: .7rem;
+}
+.rb-bar-label { font-size: .88rem; }
+.rb-bar-track { display: block; height: .7rem; }
+.rb-bar-fill {
+  display: block; height: .7rem; background: var(--rb-accent);
+  border-radius: 0 2px 2px 0;
+}
+.rb-bar-value { font-size: .9rem; font-weight: 700; white-space: nowrap; }
+.rb-fig-src {
+  font-size: .78rem; color: var(--rb-muted); margin: .7rem 0 0;
+  border-top: 1px solid var(--rb-hairline); padding-top: .4rem;
+}
+
+.rb-pull {
+  border-left: 3px solid var(--rb-gold); padding: 0 0 0 .9rem;
+  margin: 1.1rem 0; font-style: italic; font-size: 1.06rem;
+}
+.rb-pull-attr {
+  display: block; margin-top: .4rem; font-size: .8rem;
+  font-style: normal; color: var(--rb-muted);
+}
+.rb-feature-src {
+  font-size: .8rem; color: var(--rb-muted);
+  border-top: 1px solid var(--rb-hairline); padding-top: .5rem; margin-top: 1rem;
+}
+
+/* On a narrow screen the three figures stack and the bar labels go above the
+   bars, which keeps both readable instead of squeezing them side by side. */
+@media (max-width: 46rem) {
+  .rb-stats { grid-template-columns: 1fr; gap: .9rem 0; }
+  .rb-bar-row { grid-template-columns: 1fr auto; }
+  .rb-bar-label { grid-column: 1 / -1; }
+}
