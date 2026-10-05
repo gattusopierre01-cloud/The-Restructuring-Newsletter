@@ -38,6 +38,12 @@ tone:
   - No adjectives doing the work of analysis ("landmark", "seismic", "game-changing").
   - Spell out an abbreviation the first time it appears in an issue.
   - UK English spelling throughout.
+  # A dash is usually a sentence that was not finished properly. Build the
+  # sentence instead: a comma, a colon, a semicolon, or two sentences.
+  - >
+    No dashes in prose. Em dashes and spaced hyphens are both out. Use commas,
+    colons, semicolons or a full stop. En dashes are permitted only between
+    numbers and dates, as in 14-21 September or 2026-28.
 
 # Hard limits. validate.py fails the build when these are breached, which is
 # what stops an automated draft from quietly growing every week.
@@ -102,6 +108,16 @@ sections:
     min_items: 0
     max_items: 8
     max_words_per_item: 25
+  feature:
+    label: The long view
+    # An optional fourth page, run when the week gives it something worth the
+    # room. Leave the `feature` block out of an issue and the issue is three
+    # pages, with nothing above it changed. A page is about 520 words once the
+    # stat strip and a chart have taken their space, so the ceiling is a real
+    # constraint rather than a guideline.
+    max_words: 560
+    max_stats: 3
+    max_bars: 6
 
 citations:
   UK: >
@@ -131,6 +147,14 @@ sourcing:
     check a reading of it. They are never the cited source for what a court
     held, and their wording is not reproduced.
   paywalled: exclude          # students cannot reach paywalled links
+  # Yahoo Finance, MSN, TradingView and the like are syndication platforms, not
+  # outlets. They carry Reuters and Bloomberg alongside content farms, so the
+  # domain tells a reader nothing about whether the reporting is any good.
+  syndication: >
+    Always identify the outlet that originally reported a story and cite that,
+    with the reporter's name where it is given. A syndication link may be used
+    only when the original sits behind a paywall, and the citation must still
+    name the original outlet.
 
 disclaimer: >
   The Restructuring Brief is published for information and education only.
