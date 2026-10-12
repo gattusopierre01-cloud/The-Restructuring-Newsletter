@@ -227,6 +227,10 @@ class Issue:
     numbers: list[Number] = field(default_factory=list)
     watchlist: list[WatchItem] = field(default_factory=list)
     specimen_notice: str = ""
+    # What the last issue got wrong. The About page promises corrections are
+    # made on the site and noted in the next edition, so the pipeline has to be
+    # able to carry one rather than leaving it to good intentions.
+    corrections: list[str] = field(default_factory=list)
 
     # -- derived -----------------------------------------------------------
 
@@ -404,6 +408,7 @@ def parse_issue(raw: dict[str, Any]) -> Issue:
         period_start=_as_date(raw["period_start"]),
         period_end=_as_date(raw["period_end"]),
         specimen_notice=_clean(raw.get("specimen_notice")),
+        corrections=[_clean(c) for c in raw.get("corrections") or []],
         headlines=[_clean(h) for h in raw.get("headlines") or []],
         featured=featured,
         situations=[

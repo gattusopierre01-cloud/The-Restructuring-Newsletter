@@ -60,6 +60,7 @@ def issue_to_dict(issue: Issue, editorial: dict) -> dict:
         "slug": issue.slug,
         "status": issue.status,
         "specimen_notice": issue.specimen_notice,
+        "corrections": issue.corrections,
         "period_label": issue.period_label,
         "date_published": f"{issue.date_published:%-d %B %Y}",
         "read_minutes": issue.read_minutes(),

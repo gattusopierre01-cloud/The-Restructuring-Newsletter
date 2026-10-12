@@ -337,6 +337,7 @@ def validate_issue(issue: Issue, editorial: dict) -> Report:
         *((f"case {c.name[:40]!r} background", c.background) for c in issue.cases),
         *((f"watchlist {w.text[:30]!r}", w.text) for w in issue.watchlist),
         ("conditions", issue.conditions),
+        *((f"correction {i}", c) for i, c in enumerate(issue.corrections, 1)),
     ]
     if issue.featured:
         prose.extend(

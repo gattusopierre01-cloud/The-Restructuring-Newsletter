@@ -326,6 +326,18 @@ def issue_markdown(issue: Issue, editorial: dict, pdf_href: str) -> str:
         out.append("</div>")
         out.append("")
 
+    # -- corrections --------------------------------------------------------
+    if issue.corrections:
+        out.append('<div class="rb-corrections" markdown>')
+        out.append("")
+        out.append("**Corrections**")
+        out.append("")
+        for c in issue.corrections:
+            out.append(f"- {c}")
+        out.append("")
+        out.append("</div>")
+        out.append("")
+
     # -- watchlist ----------------------------------------------------------
     if issue.watchlist:
         out.append(f"## {sections['watchlist']['label']}")

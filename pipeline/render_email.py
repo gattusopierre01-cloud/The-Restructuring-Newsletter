@@ -195,6 +195,13 @@ def body_markdown(issue: Issue, editorial: dict) -> str:
             out.append(line)
         out.append("")
 
+    if issue.corrections:
+        out.append("## Corrections")
+        out.append("")
+        for c in issue.corrections:
+            out.append(f"- {c}")
+        out.append("")
+
     if issue.watchlist:
         out.append("## Watchlist")
         out.append("")
