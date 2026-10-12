@@ -587,3 +587,13 @@ form.subscribe input[type="submit"]:hover {
   .rb-bar-row { grid-template-columns: 1fr auto; }
   .rb-bar-label { grid-column: 1 / -1; }
 }
+
+
+/* Corrections. Set apart with the gold rule used for the pairing note, so a
+   reader registers it as the publication speaking rather than reporting. */
+.rb-corrections {
+  border-left: 3px solid var(--rb-gold); padding: .1rem 0 .1rem .9rem;
+  margin: 1.4rem 0; font-size: .92rem; color: var(--rb-soft, inherit);
+}
+.rb-corrections p:first-child { margin-top: 0; }
+.rb-corrections ul { margin-bottom: 0; }
