@@ -137,6 +137,22 @@
   #v(0.45em)
 ]
 
+// Corrections run directly under the headlines rather than at the end. Two
+// reasons: a reader who only reads the first page still sees them, and the
+// closing furniture on the last page is already tight enough that a correction
+// pushed the colophon onto a page of its own.
+#if d.corrections.len() > 0 {
+  block(width: 100%, breakable: false, above: 0.8em, below: 1.0em,
+        inset: (left: 10pt), stroke: (left: 2pt + gold))[
+    #text(size: 7.2pt, weight: "bold", tracking: 0.16em, fill: accent)[CORRECTIONS]
+    #v(0.25em)
+    #for c in d.corrections [
+      #text(size: 8.6pt, fill: rgb("#45413d"))[#c]
+      #v(0.2em)
+    ]
+  ]
+}
+
 // -- situation of the week ---------------------------------------------------
 
 #if d.featured != none {
