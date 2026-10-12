@@ -1,0 +1,249 @@
+# Issue 3. A clean ISO week, 5 to 11 October.
+#
+# No new large Chapter 11 filed anywhere in the United States in the window,
+# which is worth knowing given filings are running well above last year. The
+# week's weight was in England, where TalkTalk was sold to BT in the time it
+# takes to open a market.
+
+issue: 3
+slug: 2026-W41
+status: published
+
+date_published: 2026-10-12
+period_start: 2026-10-05
+period_end: 2026-10-11
+
+headlines:
+  - TalkTalk entered administration and was sold to BT the same morning, in a
+    pre-pack its largest lender has complained about to ministers and the CMA.
+  - Evergrande's liquidators sued two of the founder's former associates for
+    HK$19.15bn, and one of them counter-sued the founder two days later.
+  - A São Paulo court homologated Grupo Pão de Açúcar's out-of-court plan,
+    binding R$4.6bn of unsecured credits on 57 per cent adherence.
+
+# ---------------------------------------------------------------------------
+# Situation of the week
+# ---------------------------------------------------------------------------
+featured:
+  jurisdiction: UK
+  name: TalkTalk Telecom Group Ltd and subsidiaries
+  kind: Administration with an immediate pre-pack sale
+  stage: completed
+  venue: >
+    Business and Property Courts, Insolvency and Companies List, 5 October 2026
+  debt: Group borrowings reported at about £1.4bn; sale terms not disclosed
+  parties: >
+    Alvarez & Marsal as administrators; BT Group as buyer; Ares as the largest
+    lender
+  body: >
+    TalkTalk's holding company and four subsidiaries went into administration on
+    the morning of 5 October. By the time London opened, the trading businesses
+    had been sold to BT. The announcement and the insolvency were the same
+    event.
+
+    That is a pre-pack: a sale negotiated in full before the administrators are
+    appointed and executed immediately afterwards, without a court hearing and
+    without the creditors being asked first. It is lawful, it is common, and the
+    justification is always the same. A broadband company that announces it is
+    insolvent and then spends six weeks marketing itself has no customers left
+    to sell. Roughly 900 jobs were preserved and 2.5 million customers kept
+    their service, which is the case for doing it this way.
+
+    The complication is who bought it. BT is TalkTalk's largest competitor and,
+    through Openreach, also the supplier of the network TalkTalk resold.
+    Ares, reported to be the largest lender, has complained to ministers, to
+    Ofcom and to the Competition and Markets Authority that BT used its position
+    as supplier to see off a rival bid. BT says the assets were acquired debt
+    free and guides to about £400m of cash impact in its 2027 financial year.
+
+    A pre-pack to a connected or conflicted buyer is the precise case the
+    Evaluator regime was built for. Whether it was engaged, and what the
+    Evaluator said, is not yet public.
+  source:
+    title: BT Group has acquired TalkTalk and PlatformX
+    url: https://newsroom.bt.com/bt-group-has-acquired-talktalk-and-platformx-ensuring-continuity-of-service-for-millions-of-customers/
+
+# ---------------------------------------------------------------------------
+# Situations
+# ---------------------------------------------------------------------------
+situations:
+  - jurisdiction: HK
+    name: China Evergrande Group (in liquidation)
+    kind: Liquidators' recovery claims
+    stage: filed
+    venue: High Court of Hong Kong, reported 6 October 2026
+    debt: HK$19.15bn (about $2.44bn) claimed; group liabilities about $300bn
+    parties: >
+      Edward Middleton and Tiffany Wong of Alvarez & Marsal Asia as liquidators
+    notable: >
+      The liquidators are pursuing HK$18.65bn from Cheung Chung Kiu, chairman of
+      C C Land, and HK$500m from Kai Johan Jiang. Two days later Cheung issued
+      his own writ against the founder, Hui Ka Yan, claiming HK$10.1bn of unpaid
+      personal loans. The largest property insolvency on record has moved into
+      the phase where recoveries are fought one associate at a time, and the
+      first defendant has answered by suing the man the liquidators are also
+      pursuing.
+    source:
+      title: Cheung Chung-kiu sues Evergrande's Hui Ka-yan — The Standard
+      url: https://www.thestandard.com.hk/finance/article/344991/Tycoon-Cheung-Chung-kiu-sues-Evergrandes-Hui-Ka-yan-for-101b-unpaid-loans
+
+  - jurisdiction: BR
+    name: Companhia Brasileira de Distribuição (Grupo Pão de Açúcar)
+    kind: Recuperação extrajudicial, homologated
+    stage: completed
+    venue: >
+      3ª Vara de Falências e Recuperações Judiciais, São Paulo, 7 October 2026
+    debt: R$4.568bn (about $850m) of unsecured credits
+    parties: B3-listed; 57.49 per cent creditor adherence
+    notable: >
+      Brazil's out-of-court route lets a plan agreed with a qualified majority be
+      ratified by the court and imposed on the rest, and here a listed grocer
+      used it to bind R$4.6bn of unsecured debt on the support of barely more
+      than half its creditors. Issue 1 carried Andrade Gutierrez through the same
+      procedure three weeks ago. Two large Brazilian names in a month is the
+      extrajudicial regime being used at a scale it was not originally built for.
+    source:
+      title: Justiça homologa plano de recuperação extrajudicial do Grupo Pão de Açúcar
+      url: https://www.correiobraziliense.com.br/economia/2026/10/7516679-justica-homologa-plano-de-recuperacao-extrajudicial-do-grupo-pao-de-acucar.html
+
+# ---------------------------------------------------------------------------
+# Case notes — UK and US only
+# ---------------------------------------------------------------------------
+cases:
+  - jurisdiction: UK
+    name: Türk Altin İşletmeleri A.Ş v Koza Ltd and Ipek
+    citation: "[2026] EWHC 2528 (BP)"
+    court: High Court, Insolvency and Companies List
+    judge: Thompsell J
+    date: 2026-10-06
+    bottom_line: >
+      A shareholder resolution that merely permits a course of action leaves
+      directors bound to consider the company's interests. One that directs them
+      does not. On the facts, deadlock alone did not justify winding the company
+      up summarily.
+    facts: >
+      Türk Altin holds all the economic shares in Koza Ltd. Mr Ipek, its sole
+      director, holds one share carrying a veto over his own removal and over any
+      winding up, and the two sides have been deadlocked since 2016. Türk Altin
+      sought summary judgment on a just and equitable winding up petition, and
+      alternatively orders compelling Mr Ipek to comply with resolutions passed
+      under the Model Article 4 reserve power.
+    question: >
+      Can a just and equitable winding up be granted summarily, and does a
+      shareholder resolution under Article 4 relieve a director of his duty to
+      act in the company's interests?
+    holding: >
+      The judge found the deadlock subsisting and continuing, at [151]. He held
+      at [163] that a winding up could not be granted summarily on
+      non-compliance with those resolutions alone. On the reserve power he drew
+      a line at [198] to [201] between a resolution that permits and one that
+      directs: a permission leaves the director's duty to consider the company's
+      interests intact, while a direction would absolve him of it.
+    why_it_matters: >
+      Deadlocked companies are a standing feature of shareholder disputes, and
+      the temptation is to treat a veto as self-evidently fatal and ask for a
+      winding up on the papers. This says the discretion usually has to be
+      exercised at trial. The permission and direction distinction also tells
+      you how carefully a reserve power resolution needs drafting.
+    background: >
+      A company may be wound up where it is just and equitable to do so, a
+      jurisdiction most often used when a quasi-partnership has broken down
+      beyond repair. It is discretionary, which is why summary disposal sits
+      awkwardly with it. Separately, Model Article 4 lets shareholders by special
+      resolution direct the directors to take or refrain from an action, a
+      reserve power that sits above the board's ordinary authority. How far it
+      displaces directors' duties has not been settled.
+    source:
+      title: Approved judgment — Find Case Law
+      url: https://caselaw.nationalarchives.gov.uk/ewhc/bp/2026/2528
+
+# ---------------------------------------------------------------------------
+# Both sides of the table
+# ---------------------------------------------------------------------------
+concepts:
+  pairing: >
+    The law lets the sale happen before anyone can object because the value
+    being sold is precisely the part that disappears while they object.
+  law:
+    term: The pre-pack administration
+    body: >
+      A sale of the business negotiated in full before administrators are
+      appointed, and completed immediately afterwards. No court hearing, no
+      creditor vote, no marketing period. The administrators' duty runs to the
+      creditors as a whole, and they must explain themselves after the event
+      under Statement of Insolvency Practice 16. Where the buyer is connected to
+      the seller, the purchaser must obtain an independent Evaluator's report on
+      whether the deal is reasonable, or the administrators need creditor
+      approval. The scrutiny is real, but all of it arrives after the business
+      has changed hands.
+    see_also:
+      - SIP 16
+      - connected party sale
+      - administrators' duties
+  finance:
+    term: Going concern value against break-up value
+    body: >
+      What a business fetches running, against what its parts fetch sold
+      separately. For an asset-heavy borrower the gap is modest and there is
+      time to run a process. For a subscription business it is almost the whole
+      of the value, and it decays by the day: customers leave when they read
+      that their provider is insolvent, and they do not come back. That is why
+      a telecoms pre-pack completes before the market opens, and why creditors
+      who wanted an auction are told there was nothing to auction.
+    see_also:
+      - enterprise value
+      - churn
+      - liquidation analysis
+
+conditions: >
+  Last week's reading does not survive this one. Issue 2 called the repricing
+  broad and shallow. Over the seven days to 8 October investment grade tightened
+  from 86 basis points to 82 and the high-yield index from 324 to 315, while the
+  CCC and lower tier widened from 1,215 to 1,252. The ratio of CCC to the index
+  went from 3.75 back to 3.97, close to where it stood on 21 September. The
+  market has stopped repricing credit generally and started repricing bad credit
+  specifically, which is the shape distress takes before it arrives. The
+  ten-year ended at 5.22 per cent, so none of this is rates.
+
+numbers:
+  - label: US investment grade — spread over treasuries
+    value: 82 bp
+    change: 4 bp tighter since 1 October
+    period: Daily close, 8 October
+    source:
+      title: FRED series BAMLC0A0CM
+      url: https://fred.stlouisfed.org/series/BAMLC0A0CM
+  - label: US high yield — spread over treasuries
+    value: 315 bp
+    change: 9 bp tighter since 1 October
+    period: Daily close, 8 October
+    source:
+      title: FRED series BAMLH0A0HYM2
+      url: https://fred.stlouisfed.org/series/BAMLH0A0HYM2
+  - label: US CCC and lower — spread
+    value: 1,252 bp
+    change: 37 bp wider since 1 October
+    period: Daily close, 8 October
+    source:
+      title: FRED series BAMLH0A3HYC
+      url: https://fred.stlouisfed.org/series/BAMLH0A3HYC
+
+corrections:
+  - >
+    Issue 2 named the respondent in the Court of Appeal's dishonest assistance
+    decision as Partner Law Ltd. It is Portner Law Limited. The misspelling is
+    in the Find Case Law case title, not the judgment. The website is amended.
+
+watchlist:
+  - jurisdiction: UK
+    text: >
+      Whether Ofcom or the Competition and Markets Authority take up the
+      complaint about BT's acquisition of TalkTalk.
+  - jurisdiction: US
+    text: >
+      airBaltic's final hearing on the €350m facility, listed for 19 October
+      after being moved from this week.
+  - jurisdiction: UK
+    text: >
+      Whether Grosvenor seeks permission to appeal to the Supreme Court, with
+      the deadline falling around 30 October.
