@@ -1,0 +1,258 @@
+# Issue 4. A three week window, 12 to 31 October, because issue 3's successor
+# was drafted and never sent. Nothing from the intervening weeks is lost: the
+# Character.AI filing of 12 October reappears here in the state it has since
+# reached, which is a fight about bid protections rather than a filing.
+#
+# The spine of the issue is priority. Getty cancels its shareholders and sells
+# the new equity to the same people, Poundland tests what a restructuring plan
+# actually bought fourteen months ago, and thirty-two states argue about what a
+# break fee is for.
+
+issue: 4
+slug: 2026-W44
+status: published
+
+date_published: 2026-11-02
+period_start: 2026-10-12
+period_end: 2026-10-31
+
+headlines:
+  - Getty Images filed a prepackaged Chapter 11 in Delaware to shed more than
+    $500m of debt, cancelling its shareholders and selling the new equity to
+    them.
+  - Poundland filed a notice of intention to appoint administrators, putting
+    about 600 stores and 12,000 jobs in play fourteen months after a
+    restructuring plan.
+  - Thirty-two state attorneys general objected to Character.AI's bid
+    protections, arguing they are not necessary to preserve the value of the
+    estate.
+
+# ---------------------------------------------------------------------------
+# Situation of the week
+# ---------------------------------------------------------------------------
+featured:
+  jurisdiction: US
+  name: Getty Images Holdings, Inc. and six subsidiaries
+  kind: Prepackaged Chapter 11
+  stage: filed
+  venue: >
+    United States Bankruptcy Court for the District of Delaware, case
+    26-11643, petitions filed 21 October 2026, Judge Stickles
+  debt: >
+    About $1.46bn of funded debt; the plan eliminates more than $500m of it
+  parties: >
+    Getty family and Koch Equity Development affiliates as plan sponsors;
+    Guggenheim Securities; Kroll as claims agent
+  body: >
+    Getty Images Holdings and six subsidiaries filed prepackaged Chapter 11
+    petitions in Delaware on 21 October, one day after they began soliciting
+    votes. The foreign subsidiaries, which generate about 44 per cent of
+    revenue, did not file.
+
+    How the group arrived there matters as much as where it landed. Getty
+    agreed to merge with Shutterstock in January 2025 in a deal worth about
+    $3.7bn, and that merger was also the answer to its balance sheet. The
+    Competition and Markets Authority's final report in May 2026 required the
+    divestiture of Shutterstock's editorial business, the board declined a
+    supervised sale, and the agreement was terminated in July at a cost of
+    more than $100m in fees. The deleveraging went with it.
+
+    The plan itself is a clean illustration of priority. Secured lenders and
+    revolver lenders are made whole in new paper. Unsecured noteholders take
+    about $170.2m of cash against $270m of principal, a recovery in the low
+    sixties. Existing shareholders receive nothing and their shares are
+    cancelled, the stock having already moved from the New York Stock Exchange
+    to the over the counter market.
+
+    The sponsors who end up owning the company are the Getty family and Koch
+    affiliates, who were also among the shareholders being cancelled. They are
+    committing about $433m of new money for all of the new equity and funding
+    the $143m debtor in possession facility. That is not a contradiction. Old
+    equity goes because the value does not reach it; new equity is bought
+    because someone pays fresh money for it. It is also why the company
+    appointed independent directors to special committees, and why the plan
+    will be tested at a combined hearing listed for 14 December.
+  source:
+    title: Getty Images Holdings, Inc., Form 8-K dated 23 October 2026
+    url: https://www.sec.gov/Archives/edgar/data/0001898496/000121390026112265/ea0309581-8k_getty.htm
+
+# ---------------------------------------------------------------------------
+# Situations
+# ---------------------------------------------------------------------------
+situations:
+  - jurisdiction: UK
+    name: Poundland
+    kind: Notice of intention to appoint administrators
+    stage: negotiating
+    venue: Filed 29 October 2026; AlixPartners understood to be lined up
+    debt: About 600 stores and roughly 12,000 jobs
+    parties: >
+      Owned by Gordon Brothers, which bought the chain for £1 in 2025
+    notable: >
+      Poundland went through a Part 26A restructuring plan last year that
+      closed 68 stores over landlord opposition. Fourteen months on, the
+      notice of intention buys ten working days of protection while a sale
+      runs. CDS Superstores, Fortress and Modella have offered for parts of
+      the business, and the managing director has said no acceptable offer was
+      found for the whole. Compromising leases does not fix a chain that
+      cannot trade profitably in the leases it keeps.
+    source:
+      title: Poundland to appoint administrators with thousands of jobs at risk (ITV News)
+      url: https://www.itv.com/news/2026-10-29/poundland-to-appoint-administrators-with-thousands-of-jobs-at-risk
+
+  - jurisdiction: US
+    name: Character Technologies, Inc. (Character.AI)
+    kind: Chapter 11 sale, bidding procedures contested
+    stage: negotiating
+    venue: >
+      United States Bankruptcy Court for the District of Delaware, case
+      26-11603, petition filed 12 October 2026
+    debt: >
+      Assets and liabilities each reported in the $50m to $100m band
+    parties: Disney Worldwide Services as proposed stalking horse
+    notable: >
+      The first well known artificial intelligence company to use the chapter
+      filed on 12 October, and the case has become an argument about bid
+      protections. Thirty-two state attorneys general
+      objected that Disney's $700,000 break fee, 3.5 per cent of a $20m cash
+      price, is not necessary to preserve estate value, and that since $5.5m
+      of Disney's deposit is non-refundable, a rival bid above about $15.2m
+      already leaves the estate better off. The company is holding its $21.7m
+      floor.
+    source:
+      title: >
+        Character.ai keeps $21.7m bid floor for Disney rivals despite 32
+        states (PPC Land)
+      url: https://ppc.land/character-ai-keeps-21-7m-bid-floor-for-disney-rivals-despite-32-states/
+
+# ---------------------------------------------------------------------------
+# Case notes. UK and US only.
+# ---------------------------------------------------------------------------
+cases:
+  - jurisdiction: UK
+    name: Amber Construction Services Ltd v Ilyrian Construction Ltd
+    citation: "[2026] EWHC 2603 (BP)"
+    court: High Court, Insolvency and Companies List
+    judge: Chief Insolvency and Companies Court Judge Briggs
+    date: 2026-10-16
+    bottom_line: >
+      An interim payment claim under a JCT style subcontract can become
+      statute barred on its own, without waiting for the final account. A
+      cross-claim can defeat a petition even where it has never been
+      particularised or sued on.
+    facts: >
+      Ilyrian served two statutory demands for roofing works at two sites, for
+      £27,119.90 and £39,329.00. Amber applied for final injunctions
+      restraining winding up petitions, relying on a defective payment
+      application, limitation, and a cross-claim for loss and expense of
+      £47,728.01.
+    question: >
+      Were the debts genuinely disputed on substantial grounds, and did a
+      cross-claim that had never been litigated equal or exceed them?
+    holding: >
+      Both petitions were restrained. The first application was invalid for
+      failing mandatory requirements in clause 6.4, so no sum fell due. In the
+      alternative the claim was statute barred, because each interim payment
+      accrues as a separate debt and a statutory demand does not stop
+      limitation. The cross-claim was genuine and substantial despite thin
+      particulars, and it exceeded the second debt.
+    why_it_matters: >
+      Two practical points. A payment application that misses contractual
+      formalities may never create a debt at all, which removes the foundation
+      for a petition. And a creditor who sits on a cross-claim for six years
+      does not lose it: the judge treated the inaction as a stand off between
+      the parties rather than as evidence the claim was hollow.
+    background: >
+      A company facing a winding up petition can ask the court to restrain its
+      presentation where the debt is genuinely disputed on substantial grounds,
+      or where the company has a genuine and substantial cross-claim equal to
+      or exceeding the debt. The petition is a collective remedy, not a debt
+      collection tool, so a disputed sum belongs in ordinary litigation. The
+      court does not try the dispute on the application; it asks whether the
+      case would survive being probed and turned over.
+    source:
+      title: Approved judgment, Find Case Law
+      url: https://caselaw.nationalarchives.gov.uk/ewhc/bp/2026/2603
+
+# ---------------------------------------------------------------------------
+# Both sides of the table
+# ---------------------------------------------------------------------------
+concepts:
+  pairing: >
+    A prepack only works when everyone already agrees where the value breaks,
+    which is why the negotiating finishes before the filing and the filing
+    merely records it.
+  law:
+    term: The prepackaged Chapter 11
+    body: >
+      Votes are solicited before the petition is filed, so the case arrives
+      already carrying the majorities it needs. The debtor files its plan and
+      disclosure statement on day one and asks for one combined hearing
+      rather than the usual two. It is fast, which protects trade terms and
+      customers, and cheap set against a litigated case. What it cannot do is
+      bind a class nobody brought along beforehand, so the method depends on
+      the negotiation being finished before anyone walks into court. Getty
+      solicited on 20 October and filed on the 21st.
+  finance:
+    term: Where the value breaks
+    body: >
+      Run the enterprise value down the capital structure until you reach the
+      class that is only partly paid. Everything above it is made whole,
+      everything below gets nothing, and that class is the fulcrum: the one
+      that converts into the equity, or negotiates hardest over the terms. In
+      Getty the secured lenders and the revolver are whole, the unsecured
+      notes recover in the low sixties, and the shares are cancelled. The
+      value breaks in the unsecured notes, which is why their holders signed
+      the support agreement.
+    see_also:
+      - fulcrum security
+      - absolute priority
+      - restructuring support agreement
+
+conditions: >
+  Three weeks of widening, and this time it reached the top of the stack. From
+  12 to 29 October investment grade went from 83 basis points to 89, high
+  yield from 311 to 326, and the CCC and lower tier from 1,253 to 1,325. All
+  three peaked on 23 October and have since given back roughly half. The
+  detail worth keeping is proportion rather than size: investment grade
+  widened about seven per cent over the three weeks, against roughly five per
+  cent for high yield. Issue 3 described a market repricing bad credit
+  specifically. It is now repricing good credit too, which is slower and
+  broader.
+
+numbers:
+  - label: US investment grade, spread over treasuries
+    value: 89 bp
+    change: 6 bp wider since 12 October
+    period: Daily close, 29 October
+    source:
+      title: FRED series BAMLC0A0CM
+      url: https://fred.stlouisfed.org/series/BAMLC0A0CM
+  - label: US high yield, spread over treasuries
+    value: 326 bp
+    change: 15 bp wider since 12 October
+    period: Daily close, 29 October
+    source:
+      title: FRED series BAMLH0A0HYM2
+      url: https://fred.stlouisfed.org/series/BAMLH0A0HYM2
+  - label: US CCC and lower, spread
+    value: 1,325 bp
+    change: 72 bp wider since 12 October
+    period: Daily close, 29 October
+    source:
+      title: FRED series BAMLH0A3HYC
+      url: https://fred.stlouisfed.org/series/BAMLH0A3HYC
+
+watchlist:
+  - jurisdiction: US
+    text: >
+      Getty's combined disclosure statement and confirmation hearing on 14
+      December, with voting closing on 30 November.
+  - jurisdiction: UK
+    text: >
+      Whether a buyer emerges for Poundland inside the ten working days the
+      notice of intention buys.
+  - jurisdiction: US
+    text: >
+      Character.AI's bid deadline on 20 November, and whether a rival clears
+      the $21.7m floor.
